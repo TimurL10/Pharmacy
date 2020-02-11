@@ -1,0 +1,14 @@
+﻿@using WorkWithFarmacy.Models
+
+
+@{
+    ViewData["Title"] = "Preorder";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Preorder</h1>
+
+@foreach (Preorder preord in Model )
+{
+    <option value="@preord.Nnt">@preord.Nnt</option>
+}
