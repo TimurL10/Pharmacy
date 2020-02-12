@@ -18,35 +18,23 @@ namespace WorkWithFarmacy.Controllers
         public StringContent httpContent = new StringContent("application/json");
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         private const string STORE_PATH = "https://api.asna.cloud/v5/references/stores";
-        public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-        private const string PREORDER_PATH = "https://api.asna.cloud/v5/stores/"+client_id+"/preorders";
-        private static string token;
-        //public List<FarmacySettings> FarmacyList;
+        public const string client_id = "952b4c41-ab5b-40ea-8668-e51640b1a68f";
+        private const string PREORDER_PATH = "https://api.asna.cloud/v5/stores/"+client_id+"/stocks";
+        private static string token;        
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
 
-        public IActionResult Home(List<FarmacySettings> list)
-        {
-            //List<FarmacySettings> list = new List<FarmacySettings>();     
-
-            //list.Add(new FarmacySettings() { Name = "OOO KO-KO-KO" });
-            //list.RemoveRange(1, 19190);
+        public IActionResult Home()
+        {           
             return View();
         }
 
-        public IActionResult Preorder(List<Preorder> list)
+        public async Task<ViewResult> Preorder()
         {
-            List<Preorder> list1 = new List<Preorder>();
-            //list1 = list;            
-
-            //list1.Add(new Preorder() { Nnt = 1111111 });
-            //list1.Add(new Preorder() { Nnt = 1111112 });
-            //list1.Add(new Preorder() { Nnt = 1111113 });
-            PerformRequest();
-
+            var list = await GetPreorders();       
             return View(list);
         }
         public  IActionResult Index()
@@ -57,6 +45,12 @@ namespace WorkWithFarmacy.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public async Task<ViewResult> FarmacySettings()
+        {
+            var list = await GetPreorders();
+            return View(list);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -90,7 +84,7 @@ namespace WorkWithFarmacy.Controllers
 
         // обращаемся по маршруту api/values 
         static async Task<List<Preorder>> GetValues(string token)
-        {
+        {            
             using (var client = CreateClient(token))
             {
                 var streamTaskA = client.GetStreamAsync(PREORDER_PATH);
@@ -112,17 +106,33 @@ namespace WorkWithFarmacy.Controllers
             return client;
         }
 
-        public async Task PerformRequest()
+        public async Task<List<Preorder>> GetPreorders()
         {
-            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-            string client_secret = "g0XoL4lw";
+            string client_id = "952b4c41-ab5b-40ea-8668-e51640b1a68f";
+            string client_secret = "n7eUbUCC";
 
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
 
             var FarmacyList = await GetValues(token);
-            Preorder(FarmacyList);
+            
+            return FarmacyList;
+            
         }
+
+        //public async Task<List<Preorder>> GetStores()
+        //{
+        //    string client_id = "952b4c41-ab5b-40ea-8668-e51640b1a68f";
+        //    string client_secret = "n7eUbUCC";
+
+        //    Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+        //    token = tokenDictionary["access_token"];
+
+        //    var FarmacyList = await GetValues(token);
+
+        //    return FarmacyList;
+
+        //}
 
 
 
