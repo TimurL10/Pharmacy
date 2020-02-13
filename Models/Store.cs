@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkWithFarmacy.Models
 {
-    public class FarmacySettings
+    public class Store
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

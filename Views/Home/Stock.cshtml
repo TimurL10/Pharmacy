@@ -1,11 +1,11 @@
-﻿@model List<WorkWithFarmacy.Models.Preorder>
+﻿@model List<WorkWithFarmacy.Models.Stock>
 
 @{
-    ViewData["Title"] = "Preorder";
+    ViewData["Title"] = "Stock";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Preorder</h1>
+<h1>Stock</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -14,25 +14,25 @@
     <thead>
         <tr>
             <th>
-                NNT
+                PrtId
+            </th>
+            <th>
+                Nnt
+            </th>
+            <th>
+                Qnt
             </th>
             <th>
                 SupInn
             </th>
             <th>
-                SupDate
-            </th>
-            <th>
-                PrclDate
+               Nds
             </th>
             <th>
                 PrcOptNds
             </th>
             <th>
-                PlType
-            </th>
-            <th>
-                Status
+                PrcRet
             </th>
             <th></th>
         </tr>
@@ -41,25 +41,25 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @Html.DisplayFor(modelItem => item.PrtId)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Nnt)
-            </td>            
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Qnt)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SupInn)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SupDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrclDate)
+                @Html.DisplayFor(modelItem => item.Nds)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PrcOptNds)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PlType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
+                @Html.DisplayFor(modelItem => item.PrcRet)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |

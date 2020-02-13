@@ -18,8 +18,9 @@ namespace WorkWithFarmacy.Controllers
         public StringContent httpContent = new StringContent("application/json");
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         private const string STORE_PATH = "https://api.asna.cloud/v5/references/stores";
-        public const string client_id = "952b4c41-ab5b-40ea-8668-e51640b1a68f";
-        private const string PREORDER_PATH = "https://api.asna.cloud/v5/stores/"+client_id+"/stocks";
+        public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+        private const string PREORDER_PATH = "https://api.asna.cloud/v5/legal_entities/" + client_id+ "/preorders";
+        private const string STOCK_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/stocks";
         private static string token;        
 
         public HomeController(ILogger<HomeController> logger)
@@ -47,9 +48,15 @@ namespace WorkWithFarmacy.Controllers
             return View();
         }
 
-        public async Task<ViewResult> FarmacySettings()
+        public async Task<ViewResult> Store()
         {
-            var list = await GetPreorders();
+            var list = await GetStores();           
+            return View(list);
+        }
+
+        public async Task<ViewResult> Stock()
+        {
+            var list = await GetStock();
             return View(list);
         }
 
@@ -83,7 +90,7 @@ namespace WorkWithFarmacy.Controllers
         }
 
         // обращаемся по маршруту api/values 
-        static async Task<List<Preorder>> GetValues(string token)
+        static async Task<List<Preorder>> GetValuesPreorder(string token)
         {            
             using (var client = CreateClient(token))
             {
@@ -91,6 +98,28 @@ namespace WorkWithFarmacy.Controllers
                 var repositories = await System.Text.Json.JsonSerializer.DeserializeAsync<List<Preorder>>(await streamTaskA);
 
                  return repositories;
+            }
+        }
+
+        static async Task<List<Store>> GetValuesStore(string token)
+        {
+            using (var client = CreateClient(token))
+            {
+                var streamTaskA = client.GetStreamAsync(STORE_PATH);
+                var repositories = await System.Text.Json.JsonSerializer.DeserializeAsync<List<Store>>(await streamTaskA);
+
+                return repositories;
+            }
+        }
+
+        static async Task<List<Stock>> GetValuesStock(string token)
+        {
+            using (var client = CreateClient(token))
+            {
+                var streamTaskA = client.GetStreamAsync(STOCK_PATH);
+                var repositories = await System.Text.Json.JsonSerializer.DeserializeAsync<List<Stock>>(await streamTaskA);
+
+                return repositories;
             }
         }
 
@@ -108,31 +137,45 @@ namespace WorkWithFarmacy.Controllers
 
         public async Task<List<Preorder>> GetPreorders()
         {
-            string client_id = "952b4c41-ab5b-40ea-8668-e51640b1a68f";
-            string client_secret = "n7eUbUCC";
+            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+            string client_secret = "g0XoL4lw";
 
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
 
-            var FarmacyList = await GetValues(token);
+            var FarmacyList = await GetValuesPreorder(token);
             
             return FarmacyList;
             
         }
 
-        //public async Task<List<Preorder>> GetStores()
-        //{
-        //    string client_id = "952b4c41-ab5b-40ea-8668-e51640b1a68f";
-        //    string client_secret = "n7eUbUCC";
+        public async Task<List<Store>> GetStores()
+        {
+            string client_id = "7DA398CD-D90B-4DEB-B7C7-9B509FE7C186";
+            string client_secret = "qk4r8N3YTK";
 
-        //    Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
-        //    token = tokenDictionary["access_token"];
+            Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+            token = tokenDictionary["access_token"];
 
-        //    var FarmacyList = await GetValues(token);
+            var FarmacyList = await GetValuesStore(token);
 
-        //    return FarmacyList;
+            return FarmacyList;
 
-        //}
+        }
+
+        public async Task<List<Stock>> GetStock()
+        {
+            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+            string client_secret = "g0XoL4lw";
+
+            Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+            token = tokenDictionary["access_token"];
+
+            var FarmacyList = await GetValuesStock(token);
+
+            return FarmacyList;
+
+        }
 
 
 

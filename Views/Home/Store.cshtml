@@ -1,11 +1,11 @@
-﻿@model List<WorkWithFarmacy.Models.Preorder>
+﻿@model List<WorkWithFarmacy.Models.Store>
 
 @{
-    ViewData["Title"] = "Preorder";
+    ViewData["Title"] = "Store";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Preorder</h1>
+<h1>Store</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -14,25 +14,22 @@
     <thead>
         <tr>
             <th>
-                NNT
+                Name
             </th>
             <th>
-                SupInn
+                Guid
             </th>
             <th>
-                SupDate
+                Company
             </th>
             <th>
-                PrclDate
+                Active
             </th>
             <th>
-                PrcOptNds
+                StocksExist
             </th>
             <th>
-                PlType
-            </th>
-            <th>
-                Status
+                PreordersExist
             </th>
             <th></th>
         </tr>
@@ -41,25 +38,22 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Nnt)
-            </td>            
-            <td>
-                @Html.DisplayFor(modelItem => item.SupInn)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SupDate)
+                @Html.DisplayFor(modelItem => item.Guid)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PrclDate)
+                @Html.DisplayFor(modelItem => item.Company)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PrcOptNds)
+                @Html.DisplayFor(modelItem => item.Active)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PlType)
+                @Html.DisplayFor(modelItem => item.StocksExist)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Status)
+                @Html.DisplayFor(modelItem => item.PreordersExist)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
