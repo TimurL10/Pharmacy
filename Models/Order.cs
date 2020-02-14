@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+
+namespace WorkWithFarmacy.Models
+{
+    public class Order
+    {
+
+        [JsonPropertyName("orderId")]
+        public Guid OrderId { get; set; }
+
+        [JsonPropertyName("storeId")]
+        public Guid StoreId { get; set; }
+
+        [JsonPropertyName("issuerId")]
+        public int Nnt { get; set; }
+
+        [JsonPropertyName("src")]
+        public string Src { get; set; }
+
+        [JsonPropertyName("num")]
+        public int Num { get; set; }
+
+        [JsonPropertyName("date")]
+        public DateTime Date { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("mPhone")]
+        public double MPhone { get; set; }
+
+        [JsonPropertyName("payType")]
+        public string PayType { get; set; }
+
+        [JsonPropertyName("payTypeId")]
+        public int PayTypeId { get; set; }
+
+        [JsonPropertyName("dCard")]
+        public double DCard { get; set; }
+
+        [JsonPropertyName("ae")]
+        public int Ae { get; set; }
+
+        [JsonPropertyName("unionId")]
+        public Guid UnionId { get; set; }
+
+        [JsonPropertyName("ts")]
+        public DateTime Ts { get; set; }
+
+        [JsonPropertyName("delivery")]
+        public bool Delivery { get; set; }
+
+        [JsonPropertyName("deliveryInfo")]
+        public string DeliveryInfo { get; set; }
+    }
+}
