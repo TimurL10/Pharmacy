@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkWithFarmacy.Models
 {
-    public class Order
+    public class OrderHeaderToStore
     {
 
         [JsonPropertyName("orderId")]
@@ -16,13 +16,13 @@ namespace WorkWithFarmacy.Models
         public Guid StoreId { get; set; }
 
         [JsonPropertyName("issuerId")]
-        public int Nnt { get; set; }
+        public Guid Nnt { get; set; }
 
         [JsonPropertyName("src")]
         public string Src { get; set; }
 
         [JsonPropertyName("num")]
-        public int Num { get; set; }
+        public string Num { get; set; }
 
         [JsonPropertyName("date")]
         public DateTime Date { get; set; }
@@ -31,16 +31,16 @@ namespace WorkWithFarmacy.Models
         public string Name { get; set; }
 
         [JsonPropertyName("mPhone")]
-        public double MPhone { get; set; }
+        public string MPhone { get; set; }
 
         [JsonPropertyName("payType")]
         public string PayType { get; set; }
 
         [JsonPropertyName("payTypeId")]
-        public int PayTypeId { get; set; }
+        public string PayTypeId { get; set; }
 
         [JsonPropertyName("dCard")]
-        public double DCard { get; set; }
+        public string DCard { get; set; }
 
         [JsonPropertyName("ae")]
         public int Ae { get; set; }
