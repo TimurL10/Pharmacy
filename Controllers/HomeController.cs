@@ -14,8 +14,6 @@ namespace WorkWithFarmacy.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        public HttpClient client = new HttpClient();
-        public StringContent httpContent = new StringContent("application/json");
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         private const string STORE_PATH = "https://api.asna.cloud/v5/references/stores";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";

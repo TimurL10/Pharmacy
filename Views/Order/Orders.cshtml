@@ -1,0 +1,77 @@
+﻿@model List<WorkWithFarmacy.Models.OrderHeaderToStore>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h1>Orders</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@*@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StoreId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nnt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Src)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Num)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MPhone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PayType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PayTypeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DCard)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ae)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnionId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ts)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Delivery)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryInfo)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}*@
+    </tbody>
+</table>

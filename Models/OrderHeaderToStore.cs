@@ -37,7 +37,7 @@ namespace WorkWithFarmacy.Models
         public string PayType { get; set; }
 
         [JsonPropertyName("payTypeId")]
-        public string PayTypeId { get; set; }
+        public int PayTypeId { get; set; }
 
         [JsonPropertyName("dCard")]
         public string DCard { get; set; }

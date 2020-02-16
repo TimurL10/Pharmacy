@@ -8,6 +8,7 @@ namespace WorkWithFarmacy.Models
 {
     public class OrderRowToStore
     {
+        
         [JsonPropertyName("rowId")]
         public Guid RowId { get; set; }
 
