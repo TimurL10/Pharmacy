@@ -28,7 +28,7 @@ namespace WorkWithFarmacy.Models
 
         [JsonPropertyName("rcDate")]
         public DateTime RcDate { get; set; }
-        
+
         [JsonPropertyName("cmnt")]
         public string Cmnt { get; set; }
 

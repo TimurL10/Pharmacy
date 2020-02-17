@@ -22,8 +22,17 @@ namespace WorkWithFarmacy.Controllers
         // GET: Order
         public async Task<ViewResult> Index()
         {
-            var list = await GetOrders();
-            return View(list);
+            var startTimeSpan = TimeSpan.Zero;
+            var periodTimeSpan = TimeSpan.FromMinutes(1);
+            PutOrderToSite lists = new PutOrderToSite();
+            //lists = await GetOrders();
+            var timer = new System.Threading.Timer(async (e) =>
+            {
+                lists = await GetOrders();
+                
+            }, null, startTimeSpan, periodTimeSpan);                        
+            
+            return View(lists);
         }
 
         public async Task<ViewResult> Orders()
@@ -113,7 +122,8 @@ namespace WorkWithFarmacy.Controllers
                 {
                     new KeyValuePair<string, string>( "grant_type", "client_credentials" ),
                     new KeyValuePair<string, string>( "client_id", client_id ),
-                    new KeyValuePair<string, string> ( "client_secret", client_secret )
+                    new KeyValuePair<string, string> ( "client_secret", client_secret ),
+                    new KeyValuePair<string, string>( "X-ClientId", "manuscript" )
                 };
             var content = new FormUrlEncodedContent(pairs);
 
@@ -129,14 +139,15 @@ namespace WorkWithFarmacy.Controllers
             }
         }
 
-        static async Task<List<RootObject>> GetValuesOrder(string token)
+        static async Task<PutOrderToSite> GetValuesOrder(string token)
         {
             using (var client = CreateClient(token))
             {
-                var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
-                var repositories = await System.Text.Json.JsonSerializer.DeserializeAsync<List<RootObject>>(await streamTaskA);
-
+               // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
+                var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
+                var repositories =  System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
                 return repositories;
+                //return repositories;
             }
         }
 
@@ -152,7 +163,7 @@ namespace WorkWithFarmacy.Controllers
             return client;
         }
 
-        public async Task<List<RootObject>> GetOrders()
+        public async Task<PutOrderToSite> GetOrders()
         {
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";

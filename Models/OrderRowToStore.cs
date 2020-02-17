@@ -8,7 +8,7 @@ namespace WorkWithFarmacy.Models
 {
     public class OrderRowToStore
     {
-        
+
         [JsonPropertyName("rowId")]
         public Guid RowId { get; set; }
 
@@ -29,7 +29,7 @@ namespace WorkWithFarmacy.Models
 
         [JsonPropertyName("prc")]
         public double Prc { get; set; }
-        
+
         [JsonPropertyName("prcDsc")]
         public double PrcDsc { get; set; }
 
