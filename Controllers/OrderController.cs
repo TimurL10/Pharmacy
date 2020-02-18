@@ -17,23 +17,7 @@ namespace WorkWithFarmacy.Controllers
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
-        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2019-11-20";
-
-        // GET: Order
-        public async Task<ViewResult> Index()
-        {
-            var startTimeSpan = TimeSpan.Zero;
-            var periodTimeSpan = TimeSpan.FromMinutes(1);
-            PutOrderToSite lists = new PutOrderToSite();
-            //lists = await GetOrders();
-            var timer = new System.Threading.Timer(async (e) =>
-            {
-                lists = await GetOrders();
-                
-            }, null, startTimeSpan, periodTimeSpan);                        
-            
-            return View(lists);
-        }
+        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2019-11-20";          
 
         public async Task<ViewResult> Orders()
         {
