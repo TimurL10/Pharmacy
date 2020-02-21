@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WorkWithFarmacy.DB;
@@ -19,6 +20,8 @@ namespace WorkWithFarmacy.Controllers
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2019-11-20";
+        
+        
         public async Task<ViewResult> Orders()
         {
             var list = await GetOrders();
@@ -149,6 +152,9 @@ namespace WorkWithFarmacy.Controllers
 
         public async Task<PutOrderToSite> GetOrders()
         {
+            var optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
+            var option = optionBuilder.UseNpgsql(@"Server=127.0.0.1;User Id=postgres;Password=1234567890;Port=5432;Database=PharmDb;Trusted_Connection=True;")
+            .Options;
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";
 
@@ -156,12 +162,17 @@ namespace WorkWithFarmacy.Controllers
             token = tokenDictionary["access_token"];
 
             var FarmacyList = await GetValuesOrder(token);
-
-            
+            using (CatalogContext db = new CatalogContext(option))
+            {                
+                db.FullOrdersList.Add(FarmacyList);
+                db.SaveChanges();
+            }
+        
 
             return FarmacyList;
 
         }
+
 
     }
 }
