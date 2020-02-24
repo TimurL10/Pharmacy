@@ -20,7 +20,7 @@ namespace WorkWithFarmacy.Controllers
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2019-11-20";
-        
+        public PutOrderToSite order_filter = new PutOrderToSite();
         
         public async Task<ViewResult> Orders()
         {
@@ -133,8 +133,7 @@ namespace WorkWithFarmacy.Controllers
                // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
                 var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
                 var repositories =  System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
-                return repositories;
-                //return repositories;
+                return repositories;                
             }
         }
 
@@ -153,26 +152,53 @@ namespace WorkWithFarmacy.Controllers
         public async Task<PutOrderToSite> GetOrders()
         {
             var optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-            var option = optionBuilder.UseNpgsql(@"Server=127.0.0.1;User Id=postgres;Password=1234567890;Port=5432;Database=PharmDb;Trusted_Connection=True;")
-            .Options;
+            var option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;")
+                           .Options;
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";
 
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
 
-            var FarmacyList = await GetValuesOrder(token);
+            var OrdersList = await GetValuesOrder(token);
+            int countHeaders = 0;
+            int countRows = 0;
+            int countStatuses = 0;
+
             using (CatalogContext db = new CatalogContext(option))
-            {                
-                db.FullOrdersList.Add(FarmacyList);
+            {
+                for (int i = 0; i < OrdersList.statuses.Count; i++)
+                {
+                    if (OrdersList.statuses[i].Status == 100)
+                    {
+                        countStatuses++;
+                        for (int j = 0; j < OrdersList.headers.Count; j++)
+                        {
+
+                            if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
+                            {
+                                db.OrderHeader.Add(OrdersList.headers[j]);
+                                db.OrderStatus.Add(OrdersList.statuses[i]);
+                                countHeaders++;
+                            }
+                        }
+                        for (int k = 0; k < OrdersList.rows.Count; k++)
+                        {
+                            if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
+                            {
+                                db.OrderRows.Add(OrdersList.rows[k]);                                
+                                countRows++;
+                            }
+                        }
+                    }
+                }
                 db.SaveChanges();
             }
-        
-
-            return FarmacyList;
-
+            System.Diagnostics.Debug.WriteLine(countHeaders + " " + "=================================================================");
+            System.Diagnostics.Debug.WriteLine(countRows + " " + "=================================================================");
+            System.Diagnostics.Debug.WriteLine(countStatuses + " " + "=================================================================");
+            
+            return OrdersList;
         }
-
-
     }
 }

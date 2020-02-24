@@ -8,6 +8,8 @@ namespace WorkWithFarmacy.Models
 {
     public class Store
     {
+        public int StoreId { get; set; }
+
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

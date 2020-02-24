@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 namespace WorkWithFarmacy.Models
 {
     public class OrderRowToStore
-    {        
+    {
+        public int OrderRowId { get; set; }
+
         [JsonPropertyName("rowId")]
         public Guid RowId { get; set; }
 

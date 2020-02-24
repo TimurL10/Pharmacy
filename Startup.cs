@@ -26,7 +26,7 @@ namespace WorkWithFarmacy
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<CatalogContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Server=127.0.0.1;User Id=postgres;Password=1234567890;Port=5432;Database=PharmDb;")));
+            services.AddDbContext<CatalogContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Server=127.0.0.1;User Id=postgres;Password=timur;Port=5432;Database=PharmDb;")));
                 
         }
 

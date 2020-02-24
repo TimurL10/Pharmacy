@@ -1,7 +1,6 @@
 ﻿using WorkWithFarmacy.Models;
 using Microsoft.EntityFrameworkCore;
-
-
+using System;
 
 namespace WorkWithFarmacy.DB
 {
@@ -14,18 +13,25 @@ namespace WorkWithFarmacy.DB
         public DbSet<Stock> Stocks { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<Preorder> Preorders { get; set; }
-        public DbSet<OrderHeaderToStore> OrderHeadersList { get; set; }
-        public DbSet<OrderRowToStore> OrderRowsList { get; set; }
-        public DbSet<OrderStatusToStore> OrderStatusesList { get; set; }
-        public DbSet<PutOrderToSite> FullOrdersList { get; set; }
-        
-        //ModelBuilder ModelBuilder = new ModelBuilder()
+        public DbSet<OrderRowToStore> OrderRows { get; set; }
+        public DbSet<OrderHeaderToStore> OrderHeader { get; set; }
+        public DbSet<OrderStatusToStore> OrderStatus { get; set; }
 
-        //protected override void onModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<OrderHeaderToStore>().HasKey(o => o.OrderId);
-        //    modelBuilder.Entity<OrderRowToStore>().HasKey(o => o.RowId);
-        //    modelBuilder.Entity<OrderStatusToStore>().HasKey(o => o.StatusId);
-        //}
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+            modelBuilder.Entity<OrderHeaderToStore>().HasKey(o => o.OrderHeaderId);
+            modelBuilder.Entity<OrderHeaderToStore>().Property(b => b.OrderHeaderId).ValueGeneratedOnAdd();
+            modelBuilder.Entity<OrderRowToStore>().HasKey(o => o.OrderRowId);
+            modelBuilder.Entity<OrderStatusToStore>().HasKey(o => o.OrderStatusId);
+            modelBuilder.Entity<Preorder>().HasKey(o => o.PreorderItemId);
+            modelBuilder.Entity<Stock>().HasKey(o => o.StockItemId);
+            modelBuilder.Entity<Store>().HasKey(o => o.StoreId);
+        }
     }
 }

@@ -7,7 +7,9 @@ namespace WorkWithFarmacy.Models
 {    
     
     public class OrderHeaderToStore
-    {        
+    {
+        public int OrderHeaderId { get; set; }
+
         [JsonPropertyName("orderId")]        
         public Guid OrderId { get; set; }
 
