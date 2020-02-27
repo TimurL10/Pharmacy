@@ -151,9 +151,9 @@ namespace WorkWithFarmacy.Controllers
 
         public async Task<PutOrderToSite> GetOrders()
         {
+            //try catch for getting token
             var optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-            var option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;")
-                           .Options;
+            var option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";
 
@@ -172,6 +172,15 @@ namespace WorkWithFarmacy.Controllers
                     if (OrdersList.statuses[i].Status == 100)
                     {
                         countStatuses++;
+                        OrderStatusToStore status200 = new OrderStatusToStore();
+                        status200.Status = 200;
+                        status200.OrderId = OrdersList.statuses[i].OrderId;
+                        status200.StoreId = OrdersList.statuses[i].StoreId;
+                        status200.Date = DateTime.Now;
+                        //status200.StatusId = 
+
+
+
                         for (int j = 0; j < OrdersList.headers.Count; j++)
                         {
 
@@ -191,12 +200,14 @@ namespace WorkWithFarmacy.Controllers
                             }
                         }
                     }
+                     
                 }
+                //db.GetTable<OrderHeader>().DeleteOnSubmit(user);
                 db.SaveChanges();
             }
-            System.Diagnostics.Debug.WriteLine(countHeaders + " " + "=================================================================");
-            System.Diagnostics.Debug.WriteLine(countRows + " " + "=================================================================");
-            System.Diagnostics.Debug.WriteLine(countStatuses + " " + "=================================================================");
+            System.Diagnostics.Debug.WriteLine(countHeaders + " " + "==============================countHeaders===================================");
+            System.Diagnostics.Debug.WriteLine(countRows + " " + "======================================countRows===========================");
+            System.Diagnostics.Debug.WriteLine(countStatuses + " " + "=====================================countStatuses============================");
             
             return OrdersList;
         }

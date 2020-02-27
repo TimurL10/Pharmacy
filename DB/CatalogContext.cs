@@ -26,7 +26,7 @@ namespace WorkWithFarmacy.DB
                 throw new ArgumentNullException(nameof(modelBuilder));
             }
             modelBuilder.Entity<OrderHeaderToStore>().HasKey(o => o.OrderHeaderId);
-            modelBuilder.Entity<OrderHeaderToStore>().Property(b => b.OrderHeaderId).ValueGeneratedOnAdd();
+            //modelBuilder.Entity<OrderHeaderToStore>().Property(b => b.OrderHeaderId);
             modelBuilder.Entity<OrderRowToStore>().HasKey(o => o.OrderRowId);
             modelBuilder.Entity<OrderStatusToStore>().HasKey(o => o.OrderStatusId);
             modelBuilder.Entity<Preorder>().HasKey(o => o.PreorderItemId);
