@@ -35,7 +35,9 @@ namespace WorkWithFarmacy.Models
         public string Cmnt { get; set; }
 
         [JsonPropertyName("ts")]
-        public DateTime Ts { get; set; }
+        public DateTime Ts { get; set; }            
 
     }
+
+     
 }

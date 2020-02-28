@@ -21,7 +21,9 @@ namespace WorkWithFarmacy.Controllers
         private static string token;
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2019-11-20";
         public PutOrderToSite order_filter = new PutOrderToSite();
-        
+        public  Guid id = Guid.NewGuid();
+                
+
         public async Task<ViewResult> Orders()
         {
             var list = await GetOrders();
@@ -176,10 +178,10 @@ namespace WorkWithFarmacy.Controllers
                         status200.Status = 200;
                         status200.OrderId = OrdersList.statuses[i].OrderId;
                         status200.StoreId = OrdersList.statuses[i].StoreId;
+                        status200.RcDate = OrdersList.statuses[i].RcDate;
                         status200.Date = DateTime.Now;
-                        //status200.StatusId = 
-
-
+                        status200.StatusId = id;
+                        db.OrderStatus.Add(status200);
 
                         for (int j = 0; j < OrdersList.headers.Count; j++)
                         {
@@ -204,6 +206,8 @@ namespace WorkWithFarmacy.Controllers
                 }
                 //db.GetTable<OrderHeader>().DeleteOnSubmit(user);
                 db.SaveChanges();
+                PutOrderToSite orderToSite = new PutOrderToSite();
+                //orderToSite.statuses = 
             }
             System.Diagnostics.Debug.WriteLine(countHeaders + " " + "==============================countHeaders===================================");
             System.Diagnostics.Debug.WriteLine(countRows + " " + "======================================countRows===========================");

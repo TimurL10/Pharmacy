@@ -12,8 +12,9 @@ namespace WorkWithFarmacy.Models
     {
         [Key]
         public int PutOrderToSiteId { get; set; }
-        public List<OrderHeaderToStore> headers { get; set; }        
+        public List<OrderHeaderToStore> headers { get; set; }
         public List<OrderRowToStore> rows { get; set; }
         public List<OrderStatusToStore> statuses { get; set; }
     }
+
 }
