@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +22,11 @@ namespace WorkWithFarmacy.Controllers
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2019-11-20";
-        public PutOrderToSite order_filter = new PutOrderToSite();
         public  Guid id = Guid.NewGuid();
-                
+        public OrderStatusToStore status200 = new OrderStatusToStore();
+        public PutOrderToSite orderToSite = new PutOrderToSite();
+        public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
+        public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
 
         public async Task<ViewResult> Orders()
         {
@@ -155,9 +159,9 @@ namespace WorkWithFarmacy.Controllers
         {
             //try catch for getting token
             var optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-            var option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
+            var option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-            string client_secret = "g0XoL4lw";
+            string client_secret = "g0XoL4lw";    
 
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
@@ -174,7 +178,7 @@ namespace WorkWithFarmacy.Controllers
                     if (OrdersList.statuses[i].Status == 100)
                     {
                         countStatuses++;
-                        OrderStatusToStore status200 = new OrderStatusToStore();
+                        
                         status200.Status = 200;
                         status200.OrderId = OrdersList.statuses[i].OrderId;
                         status200.StoreId = OrdersList.statuses[i].StoreId;
@@ -190,6 +194,9 @@ namespace WorkWithFarmacy.Controllers
                             {
                                 db.OrderHeader.Add(OrdersList.headers[j]);
                                 db.OrderStatus.Add(OrdersList.statuses[i]);
+                                db.OrderStatus.Add(status200);
+                                liststatusestosite.Add(status200);
+                                orderToSite.statuses = liststatusestosite;
                                 countHeaders++;
                             }
                         }
@@ -197,23 +204,68 @@ namespace WorkWithFarmacy.Controllers
                         {
                             if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
                             {
-                                db.OrderRows.Add(OrdersList.rows[k]);                                
+                                db.OrderRows.Add(OrdersList.rows[k]);
+                                listrowstosite.Add(OrdersList.rows[k]);
+                                orderToSite.rows = listrowstosite;
                                 countRows++;
                             }
                         }
-                    }
-                     
+                    }                     
                 }
                 //db.GetTable<OrderHeader>().DeleteOnSubmit(user);
-                db.SaveChanges();
-                PutOrderToSite orderToSite = new PutOrderToSite();
-                //orderToSite.statuses = 
-            }
+                                
+                PutOrsdersToSite(orderToSite);
+                db.SaveChanges();                
+             }
             System.Diagnostics.Debug.WriteLine(countHeaders + " " + "==============================countHeaders===================================");
             System.Diagnostics.Debug.WriteLine(countRows + " " + "======================================countRows===========================");
             System.Diagnostics.Debug.WriteLine(countStatuses + " " + "=====================================countStatuses============================");
             
             return OrdersList;
+        }
+
+        public async void PutOrsdersToSite(PutOrderToSite content)
+        {
+            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+            string client_secret = "g0XoL4lw";
+           
+            try
+            {
+                using (var client = CreateClient(token))
+                {
+                    string cont = JsonConvert.SerializeObject(content);
+                    System.Diagnostics.Debug.WriteLine(cont);
+                    var responce = await client.PostAsync(GETORDERS_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
+                    System.Diagnostics.Debug.WriteLine(responce + "---------------------200---------------------");
+
+                }
+            }
+            catch
+            {
+                if (Response.StatusCode == 401)
+                {
+                    Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+                    token = tokenDictionary["access_token"];
+                }
+                if (Response.StatusCode == 429)
+                {
+                    System.Diagnostics.Debug.WriteLine("Sleep for 30 sec wating for token");
+                    Thread.Sleep(30000);
+                    Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+                    token = tokenDictionary["access_token"];
+                }
+            }
+            finally
+            {
+                using (var client = CreateClient(token))
+                {
+                    string cont = JsonConvert.SerializeObject(content);
+                    System.Diagnostics.Debug.WriteLine(cont);
+                    var responce = await client.PostAsync(GETORDERS_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
+                    System.Diagnostics.Debug.WriteLine(responce + "---------------------200---------------------");
+
+                }
+            }
         }
     }
 }
