@@ -21,12 +21,13 @@ namespace WorkWithFarmacy.Controllers
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
-        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2019-11-20";
+        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2020-03-01";
         public  Guid id = Guid.NewGuid();
         public OrderStatusToStore status200 = new OrderStatusToStore();
-        public PutOrderToSite orderToSite = new PutOrderToSite();
-        public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
-        public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
+       // public PutOrderToSite orderToSite = new PutOrderToSite();
+        //public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
+        //public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
+        public PutOrderToSite toSite = new PutOrderToSite();
 
         public async Task<ViewResult> Orders()
         {
@@ -184,19 +185,21 @@ namespace WorkWithFarmacy.Controllers
                         status200.StoreId = OrdersList.statuses[i].StoreId;
                         status200.RcDate = OrdersList.statuses[i].RcDate;
                         status200.Date = DateTime.Now;
-                        status200.StatusId = id;
+                        status200.StatusId = Guid.NewGuid();
                         db.OrderStatus.Add(status200);
+                        toSite.statuses.Add(status200);
 
                         for (int j = 0; j < OrdersList.headers.Count; j++)
                         {
 
                             if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
                             {
+                                                              
+                                toSite.statuses.Add(OrdersList.statuses[i]);                                
                                 db.OrderHeader.Add(OrdersList.headers[j]);
                                 db.OrderStatus.Add(OrdersList.statuses[i]);
-                                db.OrderStatus.Add(status200);
-                                liststatusestosite.Add(status200);
-                                orderToSite.statuses = liststatusestosite;
+                                //liststatusestosite.Add(status200);
+                                //orderToSite.statuses = liststatusestosite;
                                 countHeaders++;
                             }
                         }
@@ -205,8 +208,9 @@ namespace WorkWithFarmacy.Controllers
                             if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
                             {
                                 db.OrderRows.Add(OrdersList.rows[k]);
-                                listrowstosite.Add(OrdersList.rows[k]);
-                                orderToSite.rows = listrowstosite;
+                                toSite.rows.Add(OrdersList.rows[k]);
+                                //listrowstosite.Add(OrdersList.rows[k]);
+                                //orderToSite.rows = listrowstosite;
                                 countRows++;
                             }
                         }
@@ -214,9 +218,11 @@ namespace WorkWithFarmacy.Controllers
                 }
                 //db.GetTable<OrderHeader>().DeleteOnSubmit(user);
                                 
-                PutOrsdersToSite(orderToSite);
+                PutOrsdersToSite(toSite);
                 db.SaveChanges();                
              }
+            System.Diagnostics.Debug.WriteLine(toSite);
+
             System.Diagnostics.Debug.WriteLine(countHeaders + " " + "==============================countHeaders===================================");
             System.Diagnostics.Debug.WriteLine(countRows + " " + "======================================countRows===========================");
             System.Diagnostics.Debug.WriteLine(countStatuses + " " + "=====================================countStatuses============================");
