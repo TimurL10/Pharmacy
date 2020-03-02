@@ -22,7 +22,6 @@ namespace WorkWithFarmacy.Controllers
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2020-03-01";
-        public  Guid id = Guid.NewGuid();
         public OrderStatusToStore status200 = new OrderStatusToStore();
        // public PutOrderToSite orderToSite = new PutOrderToSite();
         //public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
