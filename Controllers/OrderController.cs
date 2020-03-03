@@ -21,12 +21,12 @@ namespace WorkWithFarmacy.Controllers
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
-        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2020-03-01";
-        public OrderStatusToStore status200 = new OrderStatusToStore();
-       // public PutOrderToSite orderToSite = new PutOrderToSite();
-        //public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
-        //public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
+        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2020-03-02";
+        public OrderStatusToStore status200 = new OrderStatusToStore();        
+        public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
+        public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
         public PutOrderToSite toSite = new PutOrderToSite();
+
 
         public async Task<ViewResult> Orders()
         {
@@ -139,6 +139,7 @@ namespace WorkWithFarmacy.Controllers
                // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
                 var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
                 var repositories =  System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
+                System.Diagnostics.Debug.WriteLine(repositories);
                 return repositories;                
             }
         }
@@ -159,7 +160,7 @@ namespace WorkWithFarmacy.Controllers
         {
             //try catch for getting token
             var optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-            var option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
+            var option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";    
 
@@ -167,6 +168,8 @@ namespace WorkWithFarmacy.Controllers
             token = tokenDictionary["access_token"];
 
             var OrdersList = await GetValuesOrder(token);
+            
+
             int countHeaders = 0;
             int countRows = 0;
             int countStatuses = 0;
@@ -185,20 +188,18 @@ namespace WorkWithFarmacy.Controllers
                         status200.RcDate = OrdersList.statuses[i].RcDate;
                         status200.Date = DateTime.Now;
                         status200.StatusId = Guid.NewGuid();
-                        db.OrderStatus.Add(status200);
-                        toSite.statuses.Add(status200);
+                        db.OrderStatus.Add(status200);                        
+                        
 
                         for (int j = 0; j < OrdersList.headers.Count; j++)
                         {
 
                             if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
-                            {
-                                                              
-                                toSite.statuses.Add(OrdersList.statuses[i]);                                
+                            {                                                            
                                 db.OrderHeader.Add(OrdersList.headers[j]);
                                 db.OrderStatus.Add(OrdersList.statuses[i]);
-                                //liststatusestosite.Add(status200);
-                                //orderToSite.statuses = liststatusestosite;
+                                liststatusestosite.Add(status200);
+                                toSite.statuses = liststatusestosite;
                                 countHeaders++;
                             }
                         }
@@ -207,9 +208,9 @@ namespace WorkWithFarmacy.Controllers
                             if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
                             {
                                 db.OrderRows.Add(OrdersList.rows[k]);
-                                toSite.rows.Add(OrdersList.rows[k]);
-                                //listrowstosite.Add(OrdersList.rows[k]);
-                                //orderToSite.rows = listrowstosite;
+                                //toSite.rows.Add(OrdersList.rows[k]);
+                                listrowstosite.Add(OrdersList.rows[k]);
+                                toSite.rows = listrowstosite;
                                 countRows++;
                             }
                         }
