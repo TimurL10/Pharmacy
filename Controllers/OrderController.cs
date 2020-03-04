@@ -138,8 +138,7 @@ namespace WorkWithFarmacy.Controllers
             {
                // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
                 var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
-                var repositories =  System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
-                System.Diagnostics.Debug.WriteLine(repositories);
+                var repositories =  System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);                
                 return repositories;                
             }
         }
@@ -167,8 +166,7 @@ namespace WorkWithFarmacy.Controllers
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
 
-            var OrdersList = await GetValuesOrder(token);
-            
+            var OrdersList = await GetValuesOrder(token);          
 
             int countHeaders = 0;
             int countRows = 0;
@@ -217,8 +215,9 @@ namespace WorkWithFarmacy.Controllers
                     }                     
                 }
                 //db.GetTable<OrderHeader>().DeleteOnSubmit(user);
-                                
-                PutOrsdersToSite(toSite);
+                //System.Diagnostics.Debug.WriteLine(toSite + "-------------array-----------------");
+                var array = BuildArrToSite(toSite);                
+                PutOrsdersToSite(array);
                 db.SaveChanges();                
              }
             System.Diagnostics.Debug.WriteLine(toSite);
@@ -230,8 +229,9 @@ namespace WorkWithFarmacy.Controllers
             return OrdersList;
         }
 
-        public async void PutOrsdersToSite(PutOrderToSite content)
+        public async void PutOrsdersToSite(ArrayOrdersToSite array)
         {
+            
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";
            
@@ -239,7 +239,7 @@ namespace WorkWithFarmacy.Controllers
             {
                 using (var client = CreateClient(token))
                 {
-                    string cont = JsonConvert.SerializeObject(content);
+                    string cont = JsonConvert.SerializeObject(array);
                     System.Diagnostics.Debug.WriteLine(cont);
                     var responce = await client.PostAsync(GETORDERS_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
                     System.Diagnostics.Debug.WriteLine(responce + "---------------------200---------------------");
@@ -265,13 +265,36 @@ namespace WorkWithFarmacy.Controllers
             {
                 using (var client = CreateClient(token))
                 {
-                    string cont = JsonConvert.SerializeObject(content);
+                    string cont = JsonConvert.SerializeObject(array);
                     System.Diagnostics.Debug.WriteLine(cont);
                     var responce = await client.PostAsync(GETORDERS_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
                     System.Diagnostics.Debug.WriteLine(responce + "---------------------200---------------------");
 
                 }
             }
+        }
+        
+        public ArrayOrdersToSite BuildArrToSite(PutOrderToSite content)
+        {
+            List<SendOrderStatuses> listStatuses = new List<SendOrderStatuses>();
+            List<SendOrderRows> listRows = new List<SendOrderRows>();            
+
+            for (int i = 0; i < content.statuses.Count; i ++)
+            {
+                SendOrderStatuses obj = new SendOrderStatuses(content.statuses[i].StatusId, content.statuses[i].OrderId, content.statuses[i].StoreId, content.statuses[i].Date, content.statuses[i].Status);
+                listStatuses.Add(obj);
+            }
+
+            for (int j = 0; j < content.rows.Count; j++)
+            {
+                SendOrderRows obj = new SendOrderRows(content.rows[j].RowId, content.rows[j].QntUnrsv);
+                listRows.Add(obj);
+            }
+
+            ArrayOrdersToSite array = new ArrayOrdersToSite(listRows, listStatuses);
+
+            return array;
+
         }
     }
 }

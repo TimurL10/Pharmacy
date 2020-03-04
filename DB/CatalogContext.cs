@@ -31,7 +31,7 @@ namespace WorkWithFarmacy.DB
             modelBuilder.Entity<OrderStatusToStore>().HasKey(o => o.OrderStatusId);
             modelBuilder.Entity<Preorder>().HasKey(o => o.PreorderItemId);
             modelBuilder.Entity<Stock>().HasKey(o => o.StockItemId);
-            modelBuilder.Entity<Store>().HasKey(o => o.StoreId);
+            modelBuilder.Entity<Store>().HasKey(o => o.StoreId);            
         }
     }
 }
