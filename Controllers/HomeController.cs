@@ -104,6 +104,7 @@ namespace WorkWithFarmacy.Controllers
             using (var client = CreateClient(token))
             {
                 var stringTaskA = await client.GetStringAsync(STORE_PATH);
+
                 System.IO.File.WriteAllText(@"D:\stores.json", stringTaskA);
                 var streamTaskA = client.GetStreamAsync(STORE_PATH);               
                 var repositories = await System.Text.Json.JsonSerializer.DeserializeAsync<List<Store>>(await streamTaskA);

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using WorkWithFarmacy.DB;
 using WorkWithFarmacy.Models;
 
@@ -22,7 +23,7 @@ namespace WorkWithFarmacy.Controllers
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2020-03-02";
-        public OrderStatusToStore status200 = new OrderStatusToStore();        
+              
         public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
         public PutOrderToSite toSite = new PutOrderToSite();
@@ -178,8 +179,8 @@ namespace WorkWithFarmacy.Controllers
                 {
                     if (OrdersList.statuses[i].Status == 100)
                     {
-                        countStatuses++;
-                        
+                        OrderStatusToStore status200 = new OrderStatusToStore();
+                        countStatuses++;                        
                         status200.Status = 200;
                         status200.OrderId = OrdersList.statuses[i].OrderId;
                         status200.StoreId = OrdersList.statuses[i].StoreId;
@@ -191,7 +192,6 @@ namespace WorkWithFarmacy.Controllers
 
                         for (int j = 0; j < OrdersList.headers.Count; j++)
                         {
-
                             if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
                             {                                                            
                                 db.OrderHeader.Add(OrdersList.headers[j]);
@@ -231,7 +231,12 @@ namespace WorkWithFarmacy.Controllers
 
         public async void PutOrsdersToSite(ArrayOrdersToSite array)
         {
-            
+            var jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore // ignore null values
+            });
+
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";
            
@@ -239,7 +244,7 @@ namespace WorkWithFarmacy.Controllers
             {
                 using (var client = CreateClient(token))
                 {
-                    string cont = JsonConvert.SerializeObject(array);
+                    string cont = JsonConvert.SerializeObject(array,Formatting.Indented,new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
                     System.Diagnostics.Debug.WriteLine(cont);
                     var responce = await client.PostAsync(GETORDERS_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
                     System.Diagnostics.Debug.WriteLine(responce + "---------------------200---------------------");

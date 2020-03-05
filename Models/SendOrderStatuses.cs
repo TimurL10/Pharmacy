@@ -9,7 +9,7 @@ namespace WorkWithFarmacy.Models
     public class SendOrderStatuses
     {
         [JsonPropertyName("statusId")]
-        public Guid RowId { get; set; }
+        public Guid StatusId { get; set; }
 
         [JsonPropertyName("orderId")]
         public Guid OrderId { get; set; }
@@ -23,9 +23,9 @@ namespace WorkWithFarmacy.Models
          [JsonPropertyName("status")]
         public int Status { get; set; }
 
-        public SendOrderStatuses(Guid RowIdn, Guid OrderIdn, Guid StoreIdn, DateTime Daten, int Statusn)
+        public SendOrderStatuses(Guid StatusIdn, Guid OrderIdn, Guid StoreIdn, DateTime Daten, int Statusn)
         {
-            RowId = RowIdn;
+            StatusId = StatusIdn;
             OrderId = OrderIdn;
             StoreId = StoreIdn;
             Date = Daten;
