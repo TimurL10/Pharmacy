@@ -17,7 +17,7 @@ namespace WorkWithFarmacy.Models
         public Guid StoreId { get; set; }
 
         [JsonPropertyName("issuerId")]
-        public Guid Nnt { get; set; }
+        public Guid IssuerId { get; set; }
 
         [JsonPropertyName("src")]
         public string Src { get; set; }
