@@ -135,13 +135,18 @@ namespace WorkWithFarmacy.Controllers
 
         static async Task<PutOrderToSite> GetValuesOrder(string token)
         {
-            using (var client = CreateClient(token))
+            try
             {
-               // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
-                var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
-                var repositories =  System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);                
-                return repositories;                
+                using (var client = CreateClient(token))
+                {
+                    // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
+                    var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
+                    var repositories = System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
+                    return repositories;
+                }
             }
+            catch (NullReferenceException) { }
+            return null;
         }
 
         // создаем http-клиента с токеном 
@@ -167,65 +172,67 @@ namespace WorkWithFarmacy.Controllers
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
 
-            var OrdersList = await GetValuesOrder(token);          
-
-            int countHeaders = 0;
-            int countRows = 0;
-            int countStatuses = 0;
-
-            using (CatalogContext db = new CatalogContext(option))
+            var OrdersList = await GetValuesOrder(token);
+            if (OrdersList.rows.Count != 0 && OrdersList != null)
             {
-                for (int i = 0; i < OrdersList.statuses.Count; i++)
-                {
-                    if (OrdersList.statuses[i].Status == 100)
-                    {
-                        OrderStatusToStore status200 = new OrderStatusToStore();
-                        countStatuses++;                        
-                        status200.Status = 200;
-                        status200.OrderId = OrdersList.statuses[i].OrderId;
-                        status200.StoreId = OrdersList.statuses[i].StoreId;
-                        status200.RcDate = OrdersList.statuses[i].RcDate;
-                        status200.Date = DateTime.Now;
-                        status200.StatusId = Guid.NewGuid();
-                        db.OrderStatus.Add(status200);                        
-                        
-
-                        for (int j = 0; j < OrdersList.headers.Count; j++)
-                        {
-                            if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
-                            {                                                            
-                                db.OrderHeader.Add(OrdersList.headers[j]);
-                                db.OrderStatus.Add(OrdersList.statuses[i]);
-                                liststatusestosite.Add(status200);
-                                toSite.statuses = liststatusestosite;
-                                countHeaders++;
-                            }
-                        }
-                        for (int k = 0; k < OrdersList.rows.Count; k++)
-                        {
-                            if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
-                            {
-                                db.OrderRows.Add(OrdersList.rows[k]);
-                                //toSite.rows.Add(OrdersList.rows[k]);
-                                listrowstosite.Add(OrdersList.rows[k]);
-                                toSite.rows = listrowstosite;
-                                countRows++;
-                            }
-                        }
-                    }                     
-                }
-                //db.GetTable<OrderHeader>().DeleteOnSubmit(user);
-                //System.Diagnostics.Debug.WriteLine(toSite + "-------------array-----------------");
-                var array = BuildArrToSite(toSite);                
-                PutOrsdersToSite(array);
-                db.SaveChanges();                
-             }
-            System.Diagnostics.Debug.WriteLine(toSite);
-
-            System.Diagnostics.Debug.WriteLine(countHeaders + " " + "==============================countHeaders===================================");
-            System.Diagnostics.Debug.WriteLine(countRows + " " + "======================================countRows===========================");
-            System.Diagnostics.Debug.WriteLine(countStatuses + " " + "=====================================countStatuses============================");
+                int countHeaders = 0;
+                int countRows = 0;
+                int countStatuses = 0;
             
+                using (CatalogContext db = new CatalogContext(option))
+                {
+                    for (int i = 0; i < OrdersList.statuses.Count; i++)
+                    {
+                        if (OrdersList.statuses[i].Status == 100)
+                        {
+                            OrderStatusToStore status200 = new OrderStatusToStore();
+                            countStatuses++;
+                            status200.Status = 200;
+                            status200.OrderId = OrdersList.statuses[i].OrderId;
+                            status200.StoreId = OrdersList.statuses[i].StoreId;
+                            status200.RcDate = OrdersList.statuses[i].RcDate;
+                            status200.Date = DateTime.Now;
+                            status200.StatusId = Guid.NewGuid();
+
+
+                            for (int j = 0; j < OrdersList.headers.Count; j++)
+                            {
+
+                                if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
+                                {
+                                    db.OrderHeader.Add(OrdersList.headers[j]);
+                                    db.OrderStatus.Add(OrdersList.statuses[i]);
+                                    liststatusestosite.Add(status200);
+                                    db.OrderStatus.Add(status200);
+                                    toSite.statuses = liststatusestosite;
+                                    countHeaders++;
+                                }
+                            }
+
+                            for (int k = 0; k < OrdersList.rows.Count; k++)
+                            {
+                                if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
+                                {
+                                    db.OrderRows.Add(OrdersList.rows[k]);
+                                    //toSite.rows.Add(OrdersList.rows[k]);
+                                    listrowstosite.Add(OrdersList.rows[k]);
+                                    toSite.rows = listrowstosite;
+                                    countRows++;
+                                }
+                            }
+                        }
+                    }
+                    //db.GetTable<OrderHeader>().DeleteOnSubmit(user);
+                    //System.Diagnostics.Debug.WriteLine(toSite + "-------------array-----------------");
+                    var array = BuildArrToSite(toSite);
+                    PutOrsdersToSite(array);
+                    db.SaveChanges();
+                }
+                System.Diagnostics.Debug.WriteLine(toSite);
+                System.Diagnostics.Debug.WriteLine(countHeaders + " " + "==============================countHeaders===================================");
+                System.Diagnostics.Debug.WriteLine(countRows + " " + "======================================countRows===========================");
+                System.Diagnostics.Debug.WriteLine(countStatuses + " " + "=====================================countStatuses============================");
+            }
             return OrdersList;
         }
 
