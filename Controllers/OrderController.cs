@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WorkWithFarmacy.DB;
 using WorkWithFarmacy.Models;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace WorkWithFarmacy.Controllers
 {
@@ -24,14 +25,12 @@ namespace WorkWithFarmacy.Controllers
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
         private const string since = "";
-        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since="+ since + "";
-              
+        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since="+ since + "";              
         public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
         public PutOrderToSite toSite = new PutOrderToSite();
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
         private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
-
 
         public async Task<ViewResult> Orders()
         {
@@ -333,5 +332,33 @@ namespace WorkWithFarmacy.Controllers
             return array;
 
         }
+
+        public void GetRemains()
+        {
+
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"remains.xlsx");
+            Excel._Worksheet xlWorksheet = (Excel.Worksheet)xlWorkbook.Worksheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            for (int i = 1; i <= rowCount; i++)
+            {
+                for (int j = 1; j <= colCount; j++)
+                {
+                    //new line
+                    if (j == 1)
+                        Console.Write("\r\n");
+
+                    //write the value to the console
+                    if (xlRange.Cells[i, j] != null && xlRange.Cells[i, j] != null)
+                        Console.Write(xlRange.Cells[i, j].ToString() + "\t");
+
+                    //add useful things here!   
+                }
+            }
+        }
+
     }
 }
