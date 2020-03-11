@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace WorkWithFarmacy.Models
 {
     public class OrderStatusToStore
-    {
+    {       
+
+        [JsonIgnore]
         public int OrderStatusId { get; set; }
 
         [JsonPropertyName("statusId")]
@@ -35,9 +37,22 @@ namespace WorkWithFarmacy.Models
         public string Cmnt { get; set; }
 
         [JsonPropertyName("ts")]
-        public DateTime Ts { get; set; }            
+        public DateTime Ts { get; set; }
+
+        public OrderStatusToStore(Guid StatusIdn, Guid OrderIdn, Guid RowIdn, DateTime Daten, DateTime RcDaten, int Statusn, DateTime tsn)
+        {
+            StatusId = StatusIdn;
+            OrderId = OrderIdn;
+            RowId = RowIdn;
+            Date = Daten;
+            RcDate = RcDaten;
+            Status = Statusn;
+            Ts = tsn;
+        }
 
     }
+
+    
 
      
 }
