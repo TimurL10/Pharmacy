@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WorkWithFarmacy.DB;
 using WorkWithFarmacy.Models;
-using Excel = Microsoft.Office.Interop.Excel;
+
 
 namespace WorkWithFarmacy.Controllers
 {
@@ -30,7 +30,7 @@ namespace WorkWithFarmacy.Controllers
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
         public PutOrderToSite toSite = new PutOrderToSite();
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
+        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
 
         public async Task<ViewResult> Orders()
         {
@@ -192,8 +192,15 @@ namespace WorkWithFarmacy.Controllers
                     {
                         if (OrdersList.statuses[i].Status == 100)
                         {
-                            OrderStatusToStore status200 = new OrderStatusToStore(Guid.NewGuid(), OrdersList.statuses[i].OrderId, OrdersList.statuses[i].RowId, DateTime.Today, OrdersList.statuses[i].RcDate, 200, DateTime.Now);
+                            OrderStatusToStore status200 = new OrderStatusToStore();
                             status200.StatusId = Guid.NewGuid();
+                            status200.OrderId = OrdersList.statuses[i].OrderId;
+                            status200.RowId = OrdersList.statuses[i].RowId;
+                            status200.Date = DateTime.Today;
+                            status200.RcDate = OrdersList.statuses[i].RcDate;
+                            status200.Status = 200;
+                            status200.Ts = DateTime.UtcNow;
+
                             db.OrderStatus.Add(status200);
                             for (int j = 0; j < OrdersList.headers.Count; j++)
                             {
@@ -215,29 +222,36 @@ namespace WorkWithFarmacy.Controllers
                                 }
                             }
                         }
-                        else if (OrdersList.statuses[i].Status == 108)
-                        {
-                            for (int k = 0; k < OrdersList.rows.Count; k++)
-                            {
-                                if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
-                                {
-                                    db.OrderRows.Remove(db.OrderRows.Single(a => a.OrderId == OrdersList.statuses[i].OrderId));                                   
+                        //else if (OrdersList.statuses[i].Status == 108)
+                        //{
+                        //    for (int k = 0; k < OrdersList.rows.Count; k++)
+                        //    {
+                        //        if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
+                        //        {
+                        //            db.OrderRows.Remove(db.OrderRows.Single(a => a.OrderId == OrdersList.statuses[i].OrderId));                                   
 
-                                    db.OrderRows.Add(OrdersList.rows[k]);
+                        //            db.OrderRows.Add(OrdersList.rows[k]);
 
-                                    db.OrderRows.Add(OrdersList.rows[k]);
-                                    listrowstosite.Add(OrdersList.rows[k]);
-                                    toSite.rows = listrowstosite;
-                                    OrderStatusToStore status208 = new OrderStatusToStore(Guid.NewGuid(), OrdersList.statuses[i].OrderId, OrdersList.statuses[i].RowId, DateTime.Today, OrdersList.statuses[i].RcDate, 208, DateTime.Now);
-                                    db.OrderStatus.Add(status208);
-                                    liststatusestosite.Add(status208);
-                                    toSite.statuses = liststatusestosite;
-                                }
-                            }
-                            var status201 = BuildArrToSite(toSite);
-                            PutOrsdersToSite(status201);
-                            db.SaveChanges();
-                        }
+                        //            db.OrderRows.Add(OrdersList.rows[k]);
+                        //            listrowstosite.Add(OrdersList.rows[k]);
+                        //            toSite.rows = listrowstosite;
+                        //            OrderStatusToStore status208 = new OrderStatusToStore();
+                        //            status208.StatusId = Guid.NewGuid();
+                        //            status208.OrderId = OrdersList.statuses[i].OrderId;
+                        //            status208.RowId = OrdersList.statuses[i].RowId;
+                        //            status208.Date = DateTime.Today;
+                        //            status208.RcDate = OrdersList.statuses[i].RcDate;
+                        //            status208.Status = 208;
+                        //            status208.Ts = DateTime.UtcNow;
+                        //            db.OrderStatus.Add(status208);
+                        //            liststatusestosite.Add(status208);
+                        //            toSite.statuses = liststatusestosite;
+                        //        }
+                        //    }
+                        //    var status201 = BuildArrToSite(toSite);
+                        //    PutOrsdersToSite(status201);
+                        //    db.SaveChanges();
+                        //}
                         //else if (OrdersList.statuses[i].Status == 102)
                         //{
                         //    for (int k = 0; k < OrdersList.rows.Count; k++)
@@ -331,34 +345,7 @@ namespace WorkWithFarmacy.Controllers
 
             return array;
 
-        }
-
-        public void GetRemains()
-        {
-
-            Excel.Application xlApp = new Excel.Application();
-            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"remains.xlsx");
-            Excel._Worksheet xlWorksheet = (Excel.Worksheet)xlWorkbook.Worksheets[1];
-            Excel.Range xlRange = xlWorksheet.UsedRange;
-            int rowCount = xlRange.Rows.Count;
-            int colCount = xlRange.Columns.Count;
-
-            for (int i = 1; i <= rowCount; i++)
-            {
-                for (int j = 1; j <= colCount; j++)
-                {
-                    //new line
-                    if (j == 1)
-                        Console.Write("\r\n");
-
-                    //write the value to the console
-                    if (xlRange.Cells[i, j] != null && xlRange.Cells[i, j] != null)
-                        Console.Write(xlRange.Cells[i, j].ToString() + "\t");
-
-                    //add useful things here!   
-                }
-            }
-        }
+        }        
 
     }
 }

@@ -39,16 +39,17 @@ namespace WorkWithFarmacy.Models
         [JsonPropertyName("ts")]
         public DateTime Ts { get; set; }
 
-        public OrderStatusToStore(Guid StatusIdn, Guid OrderIdn, Guid RowIdn, DateTime Daten, DateTime RcDaten, int Statusn, DateTime tsn)
-        {
-            StatusId = StatusIdn;
-            OrderId = OrderIdn;
-            RowId = RowIdn;
-            Date = Daten;
-            RcDate = RcDaten;
-            Status = Statusn;
-            Ts = tsn;
-        }
+        //public OrderStatusToStore(int OrderStatusIdn, Guid StatusIdn, Guid OrderIdn, Guid RowIdn, DateTime Daten, DateTime RcDaten, int Statusn, DateTime tsn)
+        //{
+        //    OrderStatusId = OrderStatusIdn;
+        //    StatusId = StatusIdn;
+        //    OrderId = OrderIdn;
+        //    RowId = RowIdn;
+        //    Date = Daten;
+        //    RcDate = RcDaten;
+        //    Status = Statusn;
+        //    Ts = tsn;
+        //}
 
     }
 

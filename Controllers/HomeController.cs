@@ -166,8 +166,8 @@ namespace WorkWithFarmacy.Controllers
 
         public async Task<List<Stock>> GetStock()
         {
-            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-            string client_secret = "g0XoL4lw";
+            string client_id = "1a0f515c-c64a-4cb0-876a-ab01d3b829af";
+            string client_secret = "PLrJIILQ";
 
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
