@@ -67,17 +67,28 @@ namespace WorkWithFarmacy.Controllers
         public async void PostFullStock()
         {
             List<Stock> list;
+            List<FullStockFiltered> listFiltered = new List<FullStockFiltered>();
             string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
             string client_secret = "g0XoL4lw";
 
+            Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+            token = tokenDictionary["access_token"];
+
+
             using (CatalogContext db = new CatalogContext(option))
             {
+               //list = db.Stocks.FromSqlRaw("SELECT 'PrtId', 'Nnt', 'Qnt', 'SupInn', 'Nds', 'PrcOptNds', 'PrcRet' FROM 'PharmDb.Stocks' WHERE 'Qnt' > 0").ToList();
                 var stock = (from c in db.Stocks where c.Qnt > 0 select c);
-                list = stock.ToList();
-                
+                list = stock.ToList();              
+            }
+            foreach (var c in list)
+            {
+                FullStockFiltered obj = new FullStockFiltered(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
+                listFiltered.Add(obj);
             }
 
-            FullStock StockList = new FullStock(DateTime.UtcNow, list);     
+
+            FullStockListAndDate StockList = new FullStockListAndDate(DateTime.UtcNow, listFiltered);     
        
             var jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
             {
@@ -90,31 +101,30 @@ namespace WorkWithFarmacy.Controllers
                 using (var client = CreateClient(token))
                 {
                     string JsonStock = JsonConvert.SerializeObject(StockList, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-                    System.Diagnostics.Debug.WriteLine(JsonStock.First() + "=========firstLineJson==========");
                     var responce = await client.PostAsync(PUTFULLSTOCK_PATH, new StringContent(JsonStock, Encoding.UTF8, "application/json"));
+                    System.Diagnostics.Debug.WriteLine(JsonStock + "-------------------JsonStock-----------------------");
                     System.Diagnostics.Debug.WriteLine(responce + "-------------------responce-----------------------");
-
+                    System.Diagnostics.Debug.WriteLine("-------------------first-----------------------");
                 }
             }
             catch
             {
                 if (Response.StatusCode == 401)
                 {
-                    Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+                    tokenDictionary = GetTokenDictionary(client_id, client_secret);
                     token = tokenDictionary["access_token"];
                 }
                 if (Response.StatusCode == 429)
                 {
                     System.Diagnostics.Debug.WriteLine("Sleep for 30 sec wating for token");
                     Thread.Sleep(30000);
-                    Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+                    tokenDictionary = GetTokenDictionary(client_id, client_secret);
                     token = tokenDictionary["access_token"];
                 }
                 if (Response.StatusCode == 400)
                 {
                     System.Diagnostics.Debug.WriteLine("Bad Request");
                     throw new Exception("Bad Request 400");
-
                 }
             }
             finally
@@ -122,10 +132,9 @@ namespace WorkWithFarmacy.Controllers
                 using (var client = CreateClient(token))
                 {
                     string cont = JsonConvert.SerializeObject(StockList, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-                    System.Diagnostics.Debug.WriteLine(cont);
                     var responce = await client.PostAsync(PUTFULLSTOCK_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
                     System.Diagnostics.Debug.WriteLine(responce + "-----------------------------------------");
-
+                    System.Diagnostics.Debug.WriteLine("-------------------second-----------------------");
                 }
             }
         }
