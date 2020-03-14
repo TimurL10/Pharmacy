@@ -30,7 +30,7 @@ namespace WorkWithFarmacy.Controllers
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
         public PutOrderToSite toSite = new PutOrderToSite();
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
+        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
 
         public async Task<ViewResult> Orders()
         {
@@ -113,6 +113,8 @@ namespace WorkWithFarmacy.Controllers
             }
         }
         // получение токена
+
+
         static Dictionary<string, string> GetTokenDictionary(string client_id, string client_secret)
         {
             var pairs = new List<KeyValuePair<string, string>>

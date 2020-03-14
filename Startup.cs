@@ -54,7 +54,7 @@ namespace WorkWithFarmacy
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Order}/{action=Orders}/{id?}");
+                    pattern: "{controller=Settings}/{action=Settings}/{id?}");
             });
         }
     }

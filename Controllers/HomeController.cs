@@ -5,8 +5,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using WorkWithFarmacy.DB;
 using WorkWithFarmacy.Models;
 
 namespace WorkWithFarmacy.Controllers
@@ -16,10 +18,12 @@ namespace WorkWithFarmacy.Controllers
         private readonly ILogger<HomeController> _logger;
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         private const string STORE_PATH = "https://api.asna.cloud/v5/references/stores";
-        public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+        public const string client_id = "1a0f515c-c64a-4cb0-876a-ab01d3b829af";
         private const string PREORDER_PATH = "https://api.asna.cloud/v5/legal_entities/" + client_id+ "/preorders";
         private const string STOCK_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/stocks";
-        private static string token;        
+        private static string token;
+        private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
+        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -138,47 +142,57 @@ namespace WorkWithFarmacy.Controllers
 
         public async Task<List<Preorder>> GetPreorders()
         {
-            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-            string client_secret = "g0XoL4lw";
+            using (CatalogContext db = new CatalogContext(option))
+            {
+                string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+                string client_secret = "g0XoL4lw";
 
-            Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
-            token = tokenDictionary["access_token"];
+                Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+                token = tokenDictionary["access_token"];
 
-            var FarmacyList = await GetValuesPreorder(token);
-            
-            return FarmacyList;
-            
+                var PreordersList = await GetValuesPreorder(token);
+                db.Preorders.AddRange(PreordersList);
+                db.SaveChanges();
+
+                return PreordersList;
+            }            
         }
 
         public async Task<List<Store>> GetStores()
         {
-            string client_id = "7DA398CD-D90B-4DEB-B7C7-9B509FE7C186";
-            string client_secret = "qk4r8N3YTK";
+            using (CatalogContext db = new CatalogContext(option))
+            {
+                string client_id = "7DA398CD-D90B-4DEB-B7C7-9B509FE7C186";
+                string client_secret = "qk4r8N3YTK";
 
-            Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
-            token = tokenDictionary["access_token"];
+                Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+                token = tokenDictionary["access_token"];
 
-            var FarmacyList = await GetValuesStore(token);
+                var FarmacyList = await GetValuesStore(token);
+                db.Stores.AddRange(FarmacyList);
+                db.SaveChanges();
 
-            return FarmacyList;
+                return FarmacyList;
+            }
 
         }
 
         public async Task<List<Stock>> GetStock()
         {
-            string client_id = "1a0f515c-c64a-4cb0-876a-ab01d3b829af";
-            string client_secret = "PLrJIILQ";
+            using (CatalogContext db = new CatalogContext(option))
+            {
+                string client_id = "1a0f515c-c64a-4cb0-876a-ab01d3b829af";
+                string client_secret = "PLrJIILQ";
 
-            Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
-            token = tokenDictionary["access_token"];
+                Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
+                token = tokenDictionary["access_token"];
 
-            var FarmacyList = await GetValuesStock(token);
+                var StocksList = await GetValuesStock(token);
+                db.Stocks.AddRange(StocksList);
+                //db.SaveChanges();
 
-            return FarmacyList;
-
-        }
-
-
-
+                return StocksList;
+            }           
+        }       
     }
 }
