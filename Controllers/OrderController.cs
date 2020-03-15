@@ -24,7 +24,7 @@ namespace WorkWithFarmacy.Controllers
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
-        private const string since = "";
+       // private const string since = "";
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since="+ since + "";              
         public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
@@ -141,18 +141,24 @@ namespace WorkWithFarmacy.Controllers
         static async Task<PutOrderToSite> GetValuesOrder(string token)
         {
             using (CatalogContext db = new CatalogContext(option))
-            {                                
-                var lastHeaderTs = db.OrderHeader.FromSqlRaw("SELECT Ts FROM OrderHeader ORDER BY Ts DESC LIMIT 1");
-                var lastStatusTs = db.OrderStatus.FromSqlRaw("SELECT Ts FROM OrderStatus ORDER BY Ts DESC LIMIT 1");
-                var lastRowTs = db.OrderRows.FromSqlRaw("SELECT Ts FROM OrderRow ORDER BY Ts DESC LIMIT 1");
-                //var sinceTs = DateTime.Compare(lastHeaderTs, lastRowTs);
+            {
+                var lastHeaderTs = (from c in db.OrderHeader select c.Ts).Max();
+                var lastStatusTs = (from c in db.OrderStatus select c.Ts).Max();
+                var lastRowTs = (from c in db.OrderRows select c.Ts).Max();
+                var max = DateTime.Compare(lastHeaderTs, lastStatusTs);
+                //switch (max)
+                //{
+                //    case 1: var max2 = DateTime.Compare(lastHeaderTs, lastRowTs);
+
+                //}
+
             }
-                try
-                {
+            try
+            {
                 using (var client = CreateClient(token))
                 {
                     // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
-
+                    
                     var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
                     var repositories = System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
                     return repositories;
@@ -311,17 +317,7 @@ namespace WorkWithFarmacy.Controllers
                     Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
                     token = tokenDictionary["access_token"];
                 }
-            }
-            finally
-            {
-                using (var client = CreateClient(token))
-                {
-                    string cont = JsonConvert.SerializeObject(array);
-                    System.Diagnostics.Debug.WriteLine(cont);
-                    var responce = await client.PostAsync(GETORDERS_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
-                    System.Diagnostics.Debug.WriteLine(responce + "---------------------200---------------------");
-                }
-            }
+            }           
         }
         
         public ArrayOrdersToSite BuildArrToSite(PutOrderToSite content)

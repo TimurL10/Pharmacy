@@ -77,9 +77,11 @@ namespace WorkWithFarmacy.Controllers
 
             using (CatalogContext db = new CatalogContext(option))
             {
-               //list = db.Stocks.FromSqlRaw("SELECT 'PrtId', 'Nnt', 'Qnt', 'SupInn', 'Nds', 'PrcOptNds', 'PrcRet' FROM 'PharmDb.Stocks' WHERE 'Qnt' > 0").ToList();
+                //list = db.Stocks.FromSqlRaw("SELECT 'PrtId', 'Nnt', 'Qnt', 'SupInn', 'Nds', 'PrcOptNds', 'PrcRet' FROM 'PharmDb.Stocks' WHERE 'Qnt' > 0").ToList();
+                // var stock = (from c in db.Stocks where c.Qnt > 0 select new {c.PrtId, c.Nnt,c.Qnt, c.SupInn, c.Nds,c.PrcOptNds,c.PrcRet});
                 var stock = (from c in db.Stocks where c.Qnt > 0 select c);
-                list = stock.ToList();              
+                list = stock.ToList();
+                
             }
             foreach (var c in list)
             {
@@ -102,9 +104,7 @@ namespace WorkWithFarmacy.Controllers
                 {
                     string JsonStock = JsonConvert.SerializeObject(StockList, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
                     var responce = await client.PostAsync(PUTFULLSTOCK_PATH, new StringContent(JsonStock, Encoding.UTF8, "application/json"));
-                    System.Diagnostics.Debug.WriteLine(JsonStock + "-------------------JsonStock-----------------------");
                     System.Diagnostics.Debug.WriteLine(responce + "-------------------responce-----------------------");
-                    System.Diagnostics.Debug.WriteLine("-------------------first-----------------------");
                 }
             }
             catch
@@ -126,17 +126,7 @@ namespace WorkWithFarmacy.Controllers
                     System.Diagnostics.Debug.WriteLine("Bad Request");
                     throw new Exception("Bad Request 400");
                 }
-            }
-            finally
-            {
-                using (var client = CreateClient(token))
-                {
-                    string cont = JsonConvert.SerializeObject(StockList, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-                    var responce = await client.PostAsync(PUTFULLSTOCK_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
-                    System.Diagnostics.Debug.WriteLine(responce + "-----------------------------------------");
-                    System.Diagnostics.Debug.WriteLine("-------------------second-----------------------");
-                }
-            }
+            }            
         }
     }
 }
