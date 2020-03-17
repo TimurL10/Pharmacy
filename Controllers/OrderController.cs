@@ -24,7 +24,7 @@ namespace WorkWithFarmacy.Controllers
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
-       // private const string since = "";
+        //public const string since = "";
         private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since="+ since + "";              
         public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
@@ -140,25 +140,47 @@ namespace WorkWithFarmacy.Controllers
 
         static async Task<PutOrderToSite> GetValuesOrder(string token)
         {
+            const string since ="";
+            string max;
             using (CatalogContext db = new CatalogContext(option))
             {
                 var lastHeaderTs = (from c in db.OrderHeader select c.Ts).Max();
                 var lastStatusTs = (from c in db.OrderStatus select c.Ts).Max();
                 var lastRowTs = (from c in db.OrderRows select c.Ts).Max();
-                var max = DateTime.Compare(lastHeaderTs, lastStatusTs);
-                //switch (max)
-                //{
-                //    case 1: var max2 = DateTime.Compare(lastHeaderTs, lastRowTs);
+                
+                if (lastHeaderTs > lastRowTs)
+                {
+                    if (lastHeaderTs > lastStatusTs)
+                    {
 
-                //}
+                        max = lastHeaderTs.ToString();
+                    }
+                    else
+                    {
+                         max = lastStatusTs.ToString(); 
+                    }
+                }
+                else
+                {
+                    if (lastRowTs > lastStatusTs)
+                    {
+                         max = lastRowTs.ToString();
 
+                    }
+                    else
+                    {
+                         max = lastStatusTs.ToString(); 
+                    }
+                }               
             }
+            
             try
             {
                 using (var client = CreateClient(token))
                 {
+                    since = max;
                     // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
-                    
+                    string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
                     var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
                     var repositories = System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
                     return repositories;
