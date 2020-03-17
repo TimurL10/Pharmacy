@@ -24,8 +24,9 @@ namespace WorkWithFarmacy.Controllers
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
-        //public const string since = "";
-        private const string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since="+ since + "";              
+        private static string since = "";
+        private static string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
+
         public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
         public PutOrderToSite toSite = new PutOrderToSite();
@@ -140,47 +141,20 @@ namespace WorkWithFarmacy.Controllers
 
         static async Task<PutOrderToSite> GetValuesOrder(string token)
         {
-            const string since ="";
-            string max;
             using (CatalogContext db = new CatalogContext(option))
             {
+                string max;
                 var lastHeaderTs = (from c in db.OrderHeader select c.Ts).Max();
                 var lastStatusTs = (from c in db.OrderStatus select c.Ts).Max();
                 var lastRowTs = (from c in db.OrderRows select c.Ts).Max();
-                
-                if (lastHeaderTs > lastRowTs)
-                {
-                    if (lastHeaderTs > lastStatusTs)
-                    {
-
-                        max = lastHeaderTs.ToString();
-                    }
-                    else
-                    {
-                         max = lastStatusTs.ToString(); 
-                    }
-                }
-                else
-                {
-                    if (lastRowTs > lastStatusTs)
-                    {
-                         max = lastRowTs.ToString();
-
-                    }
-                    else
-                    {
-                         max = lastStatusTs.ToString(); 
-                    }
-                }               
+               
             }
-            
             try
             {
                 using (var client = CreateClient(token))
                 {
-                    since = max;
                     // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
-                    string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
+                    
                     var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
                     var repositories = System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
                     return repositories;
@@ -213,7 +187,6 @@ namespace WorkWithFarmacy.Controllers
             token = tokenDictionary["access_token"];
 
             var OrdersList = await GetValuesOrder(token);
-            System.Diagnostics.Debug.WriteLine(OrdersList + "---------------------array200 from api---------------------");
             if (OrdersList.rows.Count != 0)
             {
                 using (CatalogContext db = new CatalogContext(option))
@@ -222,6 +195,9 @@ namespace WorkWithFarmacy.Controllers
                     {
                         if (OrdersList.statuses[i].Status == 100)
                         {
+
+
+
                             OrderStatusToStore status200 = new OrderStatusToStore();
                             status200.StatusId = Guid.NewGuid();
                             status200.OrderId = OrdersList.statuses[i].OrderId;
@@ -230,8 +206,18 @@ namespace WorkWithFarmacy.Controllers
                             status200.RcDate = OrdersList.statuses[i].RcDate;
                             status200.Status = 200;
                             status200.Ts = DateTime.UtcNow;
-
                             db.OrderStatus.Add(status200);
+
+                            for (int k = 0; k < OrdersList.rows.Count; k++)
+                            {
+                                if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
+                                {
+                                   // var NntExist = (from c in db.Stocks where c.Nnt = OrdersList.rows[k].Nnt select c);
+                                    db.OrderRows.Add(OrdersList.rows[k]);
+                                    listrowstosite.Add(OrdersList.rows[k]);
+                                    toSite.rows = listrowstosite;
+                                }
+                            }
                             for (int j = 0; j < OrdersList.headers.Count; j++)
                             {
                                 if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
@@ -242,15 +228,7 @@ namespace WorkWithFarmacy.Controllers
                                     toSite.statuses = liststatusestosite;
                                 }
                             }
-                            for (int k = 0; k < OrdersList.rows.Count; k++)
-                            {
-                                if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
-                                {
-                                    db.OrderRows.Add(OrdersList.rows[k]);
-                                    listrowstosite.Add(OrdersList.rows[k]);
-                                    toSite.rows = listrowstosite;
-                                }
-                            }
+                           
                         }
                         //else if (OrdersList.statuses[i].Status == 108)
                         //{
