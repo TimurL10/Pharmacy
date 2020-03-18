@@ -17,6 +17,7 @@ namespace WorkWithFarmacy
     {
         public Startup(IConfiguration configuration)
         {
+
             Configuration = configuration;
         }
 

@@ -24,14 +24,13 @@ namespace WorkWithFarmacy.Controllers
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
         private static string token;
-        private static string since = "";
+        private static string since="";
         private static string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
-
         public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
         public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
         public PutOrderToSite toSite = new PutOrderToSite();
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
+        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
 
         public async Task<ViewResult> Orders()
         {
@@ -112,10 +111,9 @@ namespace WorkWithFarmacy.Controllers
             {
                 return View();
             }
-        }
+        }        
+        
         // получение токена
-
-
         static Dictionary<string, string> GetTokenDictionary(string client_id, string client_secret)
         {
             var pairs = new List<KeyValuePair<string, string>>
@@ -141,27 +139,53 @@ namespace WorkWithFarmacy.Controllers
 
         static async Task<PutOrderToSite> GetValuesOrder(string token)
         {
-            using (CatalogContext db = new CatalogContext(option))
-            {
-                string max;
-                var lastHeaderTs = (from c in db.OrderHeader select c.Ts).Max();
-                var lastStatusTs = (from c in db.OrderStatus select c.Ts).Max();
-                var lastRowTs = (from c in db.OrderRows select c.Ts).Max();
-               
-            }
             try
+            {
+                using (CatalogContext db = new CatalogContext(option))
+                {
+                    var lastHeaderTs = (from c in db.OrderHeader select c.Ts).Max();
+                    var lastStatusTs = (from c in db.OrderStatus select c.Ts).Max();
+                    var lastRowTs = (from c in db.OrderRows select c.Ts).Max();
+                    if (lastHeaderTs > lastRowTs)
+                    {
+                        if (lastHeaderTs > lastStatusTs)
+                        {
+                            since = lastHeaderTs.ToString();
+                        }
+                        else
+                        {
+                            since = lastStatusTs.ToString();
+                        }
+                    }
+                    else
+                    {
+                        if (lastRowTs > lastStatusTs)
+                        {
+                            since = lastRowTs.ToString();
+                        }
+                        else
+                        {
+                            since = lastStatusTs.ToString();
+                        }
+                    }
+                }
+            }
+            catch
             {
                 using (var client = CreateClient(token))
                 {
                     // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
-                    
+
                     var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
-                    var repositories = System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
-                    return repositories;
+                    if (streamTaskA.Length > 0)
+                    {
+                        var repositories = System.Text.Json.JsonSerializer.Deserialize<PutOrderToSite>(streamTaskA);
+                        return repositories;
+                    }
+                    else
+                        return null;
                 }
             }
-
-            catch (NullReferenceException) { }
             return null;
         }
 
@@ -195,14 +219,11 @@ namespace WorkWithFarmacy.Controllers
                     {
                         if (OrdersList.statuses[i].Status == 100)
                         {
-
-
-
                             OrderStatusToStore status200 = new OrderStatusToStore();
                             status200.StatusId = Guid.NewGuid();
                             status200.OrderId = OrdersList.statuses[i].OrderId;
                             status200.RowId = OrdersList.statuses[i].RowId;
-                            status200.Date = DateTime.Today;
+                            status200.Date = DateTime.Now;
                             status200.RcDate = OrdersList.statuses[i].RcDate;
                             status200.Status = 200;
                             status200.Ts = DateTime.UtcNow;
@@ -212,7 +233,7 @@ namespace WorkWithFarmacy.Controllers
                             {
                                 if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
                                 {
-                                   // var NntExist = (from c in db.Stocks where c.Nnt = OrdersList.rows[k].Nnt select c);
+                                    // var NntExist = (from c in db.Stocks where c.Nnt = OrdersList.rows[k].Nnt select c);
                                     db.OrderRows.Add(OrdersList.rows[k]);
                                     listrowstosite.Add(OrdersList.rows[k]);
                                     toSite.rows = listrowstosite;
@@ -228,7 +249,7 @@ namespace WorkWithFarmacy.Controllers
                                     toSite.statuses = liststatusestosite;
                                 }
                             }
-                           
+
                         }
                         //else if (OrdersList.statuses[i].Status == 108)
                         //{
@@ -271,14 +292,15 @@ namespace WorkWithFarmacy.Controllers
                         //    }
                         //}
                     }
-                    
+
                     var array200 = BuildArrToSite(toSite);
                     PutOrsdersToSite(array200);
                     db.SaveChanges();
                 }
+                return OrdersList;
             }
-            System.Diagnostics.Debug.WriteLine(toSite);            
-            return OrdersList;
+            else
+                return null;            
         }
 
         public async void PutOrsdersToSite(ArrayOrdersToSite array)
