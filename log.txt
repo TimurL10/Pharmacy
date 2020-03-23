@@ -1,0 +1,186 @@
+﻿Creating DbCommand for 'ExecuteNonQuery'.Created DbCommand for 'ExecuteNonQuery' 
+(25ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection 
+to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From 
+OrderHeaderFailed executing DbCommand (72ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From OrderHeaderCreating DbCommand for 'ExecuteNonQuery'.Created DbCommand for 'ExecuteNonQuery' (24ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From StocksFailed executing DbCommand (57ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From StocksCreating DbCommand for 'ExecuteNonQuery'.Created DbCommand for 'ExecuteNonQuery' (29ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From /Stocks/Failed executing DbCommand (62ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From /Stocks/Creating DbCommand for 'ExecuteNonQuery'.Created DbCommand for 'ExecuteNonQuery' (30ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From 'Stocks'Failed executing DbCommand (93ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From 'Stocks'queryContext => new QueryingEnumerable<PostStock>(
+    (RelationalQueryContext)queryContext, 
+    RelationalCommandCache, 
+    null, 
+    null, 
+    Func<QueryContext, DbDataReader, ResultContext, int[], ResultCoordinator, PostStock>, 
+    WorkWithFarmacy.DB.CatalogContext, 
+    DiagnosticsLogger<Query>
+)Creating DbCommand for 'ExecuteReader'.Created DbCommand for 'ExecuteReader' (23ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vFailed executing DbCommand (49ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vClosing connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Closed connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.An exception occurred while iterating over the results of a query for context type 'WorkWithFarmacy.DB.CatalogContext'.
+Npgsql.PostgresException (0x80004005): 42P01: отношение "View_FullStock" не существует
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.ExecuteReader()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.InitializeReader(DbContext _, Boolean result)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: ОШИБКА
+    SqlState: 42P01
+    MessageText: отношение "View_FullStock" не существует
+    Position: 90
+    File: d:\pginstaller_12.auto\postgres.windows-x64\src\backend\parser\parse_relation.c
+    Line: 1194
+    Routine: parserOpenTablequeryContext => new QueryingEnumerable<PostStock>(
+    (RelationalQueryContext)queryContext, 
+    RelationalCommandCache, 
+    null, 
+    null, 
+    Func<QueryContext, DbDataReader, ResultContext, int[], ResultCoordinator, PostStock>, 
+    WorkWithFarmacy.DB.CatalogContext, 
+    DiagnosticsLogger<Query>
+)Creating DbCommand for 'ExecuteReader'.Created DbCommand for 'ExecuteReader' (21ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.An error occurred using the connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.An exception occurred while iterating over the results of a query for context type 'WorkWithFarmacy.DB.CatalogContext'.
+Npgsql.PostgresException (0x80004005): 3D000: ���� ������ "PharmDb" �� ����������
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.ConnectorPool.AllocateLong(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<>c__DisplayClass32_0.<<Open>g__OpenLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenDbConnection(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.InitializeReader(DbContext _, Boolean result)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: �����
+    SqlState: 3D000
+    MessageText: ���� ������ "PharmDb" �� ����������
+    Detail: ������, ��� ������ ��� ���� ������� ��� �������������.
+    File: d:\pginstaller_12.auto\postgres.windows-x64\src\backend\utils\init\postinit.c
+    Line: 996
+    Routine: InitPostgresqueryContext => new QueryingEnumerable<PostStock>(
+    (RelationalQueryContext)queryContext, 
+    RelationalCommandCache, 
+    null, 
+    null, 
+    Func<QueryContext, DbDataReader, ResultContext, int[], ResultCoordinator, PostStock>, 
+    WorkWithFarmacy.DB.CatalogContext, 
+    DiagnosticsLogger<Query>
+)Creating DbCommand for 'ExecuteReader'.Created DbCommand for 'ExecuteReader' (17ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vFailed executing DbCommand (40ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vClosing connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Closed connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.An exception occurred while iterating over the results of a query for context type 'WorkWithFarmacy.DB.CatalogContext'.
+Npgsql.PostgresException (0x80004005): 42P01: отношение "View_FullStock" не существует
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.ExecuteReader()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.InitializeReader(DbContext _, Boolean result)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: ОШИБКА
+    SqlState: 42P01
+    MessageText: отношение "View_FullStock" не существует
+    Position: 90
+    File: d:\pginstaller_12.auto\postgres.windows-x64\src\backend\parser\parse_relation.c
+    Line: 1194
+    Routine: parserOpenTableCreating DbCommand for 'ExecuteNonQuery'.Created DbCommand for 'ExecuteNonQuery' (18ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From 'Stocks'Failed executing DbCommand (46ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From 'Stocks'Closing connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Closed connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.'CatalogContext' disposed.queryContext => new QueryingEnumerable<PostStock>(
+    (RelationalQueryContext)queryContext, 
+    RelationalCommandCache, 
+    null, 
+    null, 
+    Func<QueryContext, DbDataReader, ResultContext, int[], ResultCoordinator, PostStock>, 
+    WorkWithFarmacy.DB.CatalogContext, 
+    DiagnosticsLogger<Query>
+)Creating DbCommand for 'ExecuteReader'.Created DbCommand for 'ExecuteReader' (18ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vFailed executing DbCommand (53ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vClosing connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Closed connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.An exception occurred while iterating over the results of a query for context type 'WorkWithFarmacy.DB.CatalogContext'.
+Npgsql.PostgresException (0x80004005): 42P01: отношение "View_FullStock" не существует
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.ExecuteReader()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.InitializeReader(DbContext _, Boolean result)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: ОШИБКА
+    SqlState: 42P01
+    MessageText: отношение "View_FullStock" не существует
+    Position: 90
+    File: d:\pginstaller_12.auto\postgres.windows-x64\src\backend\parser\parse_relation.c
+    Line: 1194
+    Routine: parserOpenTablequeryContext => new QueryingEnumerable<PostStock>(
+    (RelationalQueryContext)queryContext, 
+    RelationalCommandCache, 
+    null, 
+    null, 
+    Func<QueryContext, DbDataReader, ResultContext, int[], ResultCoordinator, PostStock>, 
+    WorkWithFarmacy.DB.CatalogContext, 
+    DiagnosticsLogger<Query>
+)Creating DbCommand for 'ExecuteReader'.Created DbCommand for 'ExecuteReader' (8112ms).Opening connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Opened connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Executing DbCommand [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vFailed executing DbCommand (3,583ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT v."Nds", v."Nnt", v."PrcOptNds", v."PrcRet", v."PrtId", v."Qnt", v."SupInn"
+FROM "View_FullStock" AS vClosing connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.Closed connection to database 'PharmDb' on server 'tcp://127.0.0.1:5432'.An exception occurred while iterating over the results of a query for context type 'WorkWithFarmacy.DB.CatalogContext'.
+Npgsql.PostgresException (0x80004005): 42P01: отношение "View_FullStock" не существует
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlConnector.<>c__DisplayClass160_0.<<DoReadMessage>g__ReadMessageLong|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReaderAsync(CommandBehavior behavior, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.ExecuteReader()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.InitializeReader(DbContext _, Boolean result)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.Enumerator.MoveNext()
+  Exception data:
+    Severity: ОШИБКА
+    SqlState: 42P01
+    MessageText: отношение "View_FullStock" не существует
+    Position: 90
+    File: d:\pginstaller_12.auto\postgres.windows-x64\src\backend\parser\parse_relation.c
+    Line: 1194
+    Routine: parserOpenTable

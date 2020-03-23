@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WorkWithFarmacy.DB;
@@ -16,17 +18,25 @@ namespace WorkWithFarmacy.Controllers
 {
     public class SettingsController : Controller
     {
+        private readonly ILogger<SettingsController> _logger;
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
+        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
-        public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+        public const string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
         private static string token;
         private const string since = "";
         private const string PUTFULLSTOCK_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/stocks";
 
 
+        public SettingsController(ILogger<SettingsController> logger)
+        {
+            _logger = logger;
+        }
+
         public IActionResult Settings()
         {
+            
+            _logger.LogInformation("Test Message");
             return View();
         }
 
@@ -68,8 +78,9 @@ namespace WorkWithFarmacy.Controllers
         {
             List<Stock> list;
             List<FullStockFiltered> listFiltered = new List<FullStockFiltered>();
-            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-            string client_secret = "g0XoL4lw";
+            List<PostStock> fullStockList = new List<PostStock>();
+            string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
+            string client_secret = "8rU2zvHA";
 
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
@@ -77,17 +88,22 @@ namespace WorkWithFarmacy.Controllers
 
             using (CatalogContext db = new CatalogContext(option))
             {
-                //list = db.Stocks.FromSqlRaw("SELECT 'PrtId', 'Nnt', 'Qnt', 'SupInn', 'Nds', 'PrcOptNds', 'PrcRet' FROM 'PharmDb.Stocks' WHERE 'Qnt' > 0").ToList();
-                // var stock = (from c in db.Stocks where c.Qnt > 0 select new {c.PrtId, c.Nnt,c.Qnt, c.SupInn, c.Nds,c.PrcOptNds,c.PrcRet});
-                var stock = (from c in db.Stocks where c.Qnt > 0 select c);
-                list = stock.ToList();
-                
+                db.GetService<ILoggerFactory>().AddProvider(new MyLoggerProvider());
+               // db.Database.ExecuteSqlRaw(@"CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From 'Stocks'");                
+                var fullStock = db.FullStock.ToList();
+
+                //var stock = (from c in db.Stocks where c.Qnt > 0 select c);
+                //list = stock.ToList();
+                foreach (var c in fullStock)
+                {
+                   // PostStock obj = new PostStock(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
+                    //FullStockFiltered obj = new FullStockFiltered(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
+                    //listFiltered.Add(obj);
+                  //  fullStockList.Add(obj);
+                }
+
             }
-            foreach (var c in list)
-            {
-                FullStockFiltered obj = new FullStockFiltered(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
-                listFiltered.Add(obj);
-            }
+            
 
 
             FullStockListAndDate StockList = new FullStockListAndDate(DateTime.UtcNow, listFiltered);     

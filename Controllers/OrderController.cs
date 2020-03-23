@@ -22,7 +22,7 @@ namespace WorkWithFarmacy.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
-        public const string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
+        public const string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
         private static string token;
         private static string since="";
         private static string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
@@ -204,8 +204,8 @@ namespace WorkWithFarmacy.Controllers
         public async Task<PutOrderToSite> GetOrders()
         {
             //try catch for getting token            
-            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-            string client_secret = "g0XoL4lw";    
+            string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
+            string client_secret = "8rU2zvHA";    
 
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
@@ -311,8 +311,8 @@ namespace WorkWithFarmacy.Controllers
                 NullValueHandling = NullValueHandling.Ignore // ignore null values
             });
 
-            string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-            string client_secret = "g0XoL4lw";
+            string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
+            string client_secret = "8rU2zvHA";
            
             try
             {

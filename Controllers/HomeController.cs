@@ -18,12 +18,12 @@ namespace WorkWithFarmacy.Controllers
         private readonly ILogger<HomeController> _logger;
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
         private const string STORE_PATH = "https://api.asna.cloud/v5/references/stores";
-        public const string client_id = "d82ba4cd-6f5a-46a5-92ad-fbbea56aae40";
+        public const string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
         private const string PREORDER_PATH = "https://api.asna.cloud/v5/legal_entities/" + client_id+ "/preorders";
         private const string STOCK_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/stocks";
         private static string token;
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
-        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = 1234567890; Port = 5432; Database = PharmDb;").Options;
+        private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
 
         public HomeController(ILogger<HomeController> logger)
         {
