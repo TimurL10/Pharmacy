@@ -227,12 +227,9 @@ namespace WorkWithFarmacy.Controllers
                                     {
                                         //200
                                         var StockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c);
-                                        //db.ReservedRows.Add();
+                                        db.ReservedRows.Add(OrdersList.rows[k]); // adding to reserve table
                                         StockRow.First().Qnt = NntQnt.First() - OrdersList.rows[k].Nnt;
-                                        db.Stocks.Update(StockRow.First());
-
-                                        
-
+                                        db.Stocks.Update(StockRow.First());                                       
                                         OrderStatusToStore status200 = new OrderStatusToStore(
                                        OrdersList.statuses[i].StatusId = Guid.NewGuid(),
                                        OrdersList.statuses[i].OrderId = OrdersList.statuses[i].OrderId,
@@ -245,14 +242,36 @@ namespace WorkWithFarmacy.Controllers
                                     }
                                     else if (NntQnt.First() < OrdersList.rows[k].Qnt)
                                     {
-                                        //201
+                                        //201                                                
                                         var StockQntExist = OrdersList.rows[k].Qnt - NntQnt.First();
+                                        OrdersList.rows[k].Qnt = StockQntExist;
+                                        db.ReservedRows.Add(OrdersList.rows[k]); // adding to reserve table
+                                        var StockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c);
+                                        StockRow.First().Qnt = 0;
+                                        db.Stocks.Update(StockRow.First()); // updating Stock table
                                         OrdersList.rows[k].QntUnrsv = StockQntExist;
-
+                                        OrderStatusToStore status201 = new OrderStatusToStore(
+                                      OrdersList.statuses[i].StatusId = Guid.NewGuid(),
+                                      OrdersList.statuses[i].OrderId = OrdersList.statuses[i].OrderId,
+                                      OrdersList.statuses[i].RowId = OrdersList.statuses[i].RowId,
+                                      OrdersList.statuses[i].Date = DateTime.Now,
+                                      OrdersList.statuses[i].RcDate = OrdersList.statuses[i].RcDate,
+                                      OrdersList.statuses[i].Status = 201,
+                                      OrdersList.statuses[i].Ts = DateTime.UtcNow);
+                                        db.OrderStatus.Add(status201);
                                     }
                                     else if (!NntQnt.Any())
                                     {
                                         //202
+                                        OrderStatusToStore status202 = new OrderStatusToStore(
+                                     OrdersList.statuses[i].StatusId = Guid.NewGuid(),
+                                     OrdersList.statuses[i].OrderId = OrdersList.statuses[i].OrderId,
+                                     OrdersList.statuses[i].RowId = OrdersList.statuses[i].RowId,
+                                     OrdersList.statuses[i].Date = DateTime.Now,
+                                     OrdersList.statuses[i].RcDate = OrdersList.statuses[i].RcDate,
+                                     OrdersList.statuses[i].Status = 202,
+                                     OrdersList.statuses[i].Ts = DateTime.UtcNow);
+                                        db.OrderStatus.Add(status202);
                                     }
                                     db.OrderRows.Add(OrdersList.rows[k]);
                                     listrowstosite.Add(OrdersList.rows[k]);
@@ -265,7 +284,7 @@ namespace WorkWithFarmacy.Controllers
                                 {
                                     db.OrderHeader.Add(OrdersList.headers[j]);
                                     db.OrderStatus.Add(OrdersList.statuses[i]);
-                                    liststatusestosite.Add(status200);
+                                   // liststatusestosite.Add(status200);
                                     toSite.statuses = liststatusestosite;
                                 }
                             }

@@ -21,7 +21,7 @@ namespace WorkWithFarmacy.DB
         public DbSet<OrderHeaderToStore> OrderHeader { get; set; }
         public DbSet<OrderStatusToStore> OrderStatus { get; set; }         
         public DbSet<PostStock> FullStock { get; set; }
-        public DbSet<ReservedRows> ReservedRows { get; set; }
+        public DbSet<OrderRowToStore> ReservedRows { get; set; }
        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,7 +41,7 @@ namespace WorkWithFarmacy.DB
             modelBuilder.Entity<OrderHeaderToStore>().ToTable("OrderHeader").HasKey(o => o.OrderHeaderId);
             modelBuilder.Entity<OrderRowToStore>().ToTable("OrderRows").HasKey(o => o.OrderRowId);
             modelBuilder.Entity<OrderStatusToStore>().ToTable("OrderStatus").HasKey(o => o.OrderStatusId);
-            modelBuilder.Entity<ReservedRows>().ToTable("ReservedRows").HasKey(o => o.OrderRowId);
+            modelBuilder.Entity<OrderRowToStore>().ToTable("ReservedRows").HasKey(o => o.OrderRowId);
         }
     }
 }
