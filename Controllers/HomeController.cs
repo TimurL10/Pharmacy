@@ -144,8 +144,8 @@ namespace WorkWithFarmacy.Controllers
         {
             using (CatalogContext db = new CatalogContext(option))
             {
-                string client_id = "D82BA4CD-6F5A-46A5-92AD-FBBEA56AAE40";
-                string client_secret = "g0XoL4lw";
+                string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
+                string client_secret = "8rU2zvHA";
 
                 Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
                 token = tokenDictionary["access_token"];
@@ -181,8 +181,8 @@ namespace WorkWithFarmacy.Controllers
         {
             using (CatalogContext db = new CatalogContext(option))
             {
-                string client_id = "d82ba4cd-6f5a-46a5-92ad-fbbea56aae40";
-                string client_secret = "g0XoL4lw";
+                string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
+                string client_secret = "8rU2zvHA";
 
                 Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
                 token = tokenDictionary["access_token"];

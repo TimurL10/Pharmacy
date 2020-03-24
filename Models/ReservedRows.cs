@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace WorkWithFarmacy.Models
 {
-    public class OrderRowToStore
+    public class ReservedRows : Stock
     {
-        public int OrderRowId { get; set; }
+        public override int OrderRowId { get; set; }
 
         [JsonPropertyName("rowId")]
-        public Guid RowId { get; set; }
+        public override Guid RowId { get; set; }
 
         [JsonPropertyName("orderId")]
         public Guid OrderId { get; set; }

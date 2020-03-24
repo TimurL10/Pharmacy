@@ -30,7 +30,6 @@ namespace WorkWithFarmacy
         {
             services.AddControllersWithViews();
             services.AddDbContext<CatalogContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Server=127.0.0.1;User Id=postgres;Password=timur;Port=5432;Database=PharmDb;")));
-                
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

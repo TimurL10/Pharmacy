@@ -8,27 +8,27 @@ namespace WorkWithFarmacy.Models
 {
     public class Stock
     {
-        public int StockItemId { get; set; }
+        public virtual int StockItemId { get; set; }
 
         [JsonPropertyName("prtId")]
-        public string PrtId { get; set; }
+        public virtual string PrtId { get; set; }
 
         [JsonPropertyName("nnt")]
-        public int Nnt { get; set; }
+        public virtual int Nnt { get; set; }
 
         [JsonPropertyName("qnt")]
-        public double Qnt { get; set; }
+        public virtual double Qnt { get; set; }
 
         [JsonPropertyName("supInn")]
-        public string SupInn { get; set; }
+        public virtual string SupInn { get; set; }
 
         [JsonPropertyName("nds")]
-        public int Nds { get; set; }
+        public virtual int Nds { get; set; }
 
         [JsonPropertyName("prcOptNds")]
-        public double PrcOptNds { get; set; }
+        public virtual double PrcOptNds { get; set; }
 
         [JsonPropertyName("prcRet")]
-        public double PrcRet { get; set; }
+        public virtual double PrcRet { get; set; }
     }
 }
