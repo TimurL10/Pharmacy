@@ -26,9 +26,7 @@ namespace WorkWithFarmacy.Controllers
         private static string token;
         private static string since="";
         private static string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
-        public List<OrderRowToStore> listrowstosite = new List<OrderRowToStore>();
-        public List<OrderStatusToStore> liststatusestosite = new List<OrderStatusToStore>();
-        public PutOrderToSite toSite = new PutOrderToSite();
+        public PutOrderToSite toSite = new PutOrderToSite() { rows = new List<OrderRowToStore>(), statuses = new List<OrderStatusToStore>()};
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
         private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
 
@@ -239,6 +237,7 @@ namespace WorkWithFarmacy.Controllers
                                        OrdersList.statuses[i].Status = 200,
                                        OrdersList.statuses[i].Ts = DateTime.UtcNow);
                                         db.OrderStatus.Add(status200);
+                                        toSite.statuses.Add(status200);
                                     }
                                     else if (NntQnt.First() < OrdersList.rows[k].Qnt)
                                     {
@@ -259,11 +258,12 @@ namespace WorkWithFarmacy.Controllers
                                       OrdersList.statuses[i].Status = 201,
                                       OrdersList.statuses[i].Ts = DateTime.UtcNow);
                                         db.OrderStatus.Add(status201);
+                                        toSite.statuses.Add(status201);
                                     }
                                     else if (!NntQnt.Any())
                                     {
                                         //202
-                                        OrderStatusToStore status202 = new OrderStatusToStore(
+                                     OrderStatusToStore status202 = new OrderStatusToStore(
                                      OrdersList.statuses[i].StatusId = Guid.NewGuid(),
                                      OrdersList.statuses[i].OrderId = OrdersList.statuses[i].OrderId,
                                      OrdersList.statuses[i].RowId = OrdersList.statuses[i].RowId,
@@ -272,10 +272,10 @@ namespace WorkWithFarmacy.Controllers
                                      OrdersList.statuses[i].Status = 202,
                                      OrdersList.statuses[i].Ts = DateTime.UtcNow);
                                         db.OrderStatus.Add(status202);
+                                        toSite.statuses.Add(status202);
                                     }
                                     db.OrderRows.Add(OrdersList.rows[k]);
-                                    listrowstosite.Add(OrdersList.rows[k]);
-                                    toSite.rows = listrowstosite;
+                                    toSite.rows.Add(OrdersList.rows[k]);
                                 }
                             }
                             for (int j = 0; j < OrdersList.headers.Count; j++)
@@ -283,12 +283,9 @@ namespace WorkWithFarmacy.Controllers
                                 if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
                                 {
                                     db.OrderHeader.Add(OrdersList.headers[j]);
-                                    db.OrderStatus.Add(OrdersList.statuses[i]);
-                                   // liststatusestosite.Add(status200);
-                                    toSite.statuses = liststatusestosite;
+                                    db.OrderStatus.Add(OrdersList.statuses[i]);                                    
                                 }
                             }
-
                         }
                         //else if (OrdersList.statuses[i].Status == 108)
                         //{
