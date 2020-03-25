@@ -358,7 +358,6 @@ namespace WorkWithFarmacy.Controllers
                     System.Diagnostics.Debug.WriteLine(cont);
                     var responce = await client.PostAsync(GETORDERS_PATH, new StringContent(cont, Encoding.UTF8, "application/json"));
                     System.Diagnostics.Debug.WriteLine(responce + "---------------------200---------------------");
-
                 }
             }
             catch
