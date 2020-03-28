@@ -32,16 +32,16 @@ namespace WorkWithFarmacy.DB
             modelBuilder.Entity<PostStock>((o =>
             {
                 o.HasNoKey();
-                o.ToView("View_FullStock", "PostStock");
+                o.ToView("view_fullstock");
             }));
             
             modelBuilder.Entity<Preorder>().HasKey(o => o.PreorderItemId);
-            modelBuilder.Entity<Stock>().ToTable("Stocks").HasKey(o => o.StockItemId);
+            modelBuilder.Entity<Stock>().ToTable("stocks").HasKey(o => o.StockItemId);
             modelBuilder.Entity<Store>().HasKey(o => o.StoreId);
-            modelBuilder.Entity<OrderHeaderToStore>().ToTable("OrderHeader").HasKey(o => o.OrderHeaderId);
-            modelBuilder.Entity<OrderRowToStore>().ToTable("OrderRows").HasKey(o => o.OrderRowId);
-            modelBuilder.Entity<OrderStatusToStore>().ToTable("OrderStatus").HasKey(o => o.OrderStatusId);
-            modelBuilder.Entity<OrderRowToStore>().ToTable("ReservedRows").HasKey(o => o.OrderRowId);
+            modelBuilder.Entity<OrderHeaderToStore>().ToTable("orderHeader").HasKey(o => o.OrderHeaderId);
+            modelBuilder.Entity<OrderRowToStore>().ToTable("orderRows").HasKey(o => o.OrderRowId);
+            modelBuilder.Entity<OrderStatusToStore>().ToTable("orderStatus").HasKey(o => o.OrderStatusId);
+            modelBuilder.Entity<OrderRowToStore>().ToTable("reservedRows").HasKey(o => o.OrderRowId);
         }
     }
 }

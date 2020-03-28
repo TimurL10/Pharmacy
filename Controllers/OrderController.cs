@@ -227,15 +227,13 @@ namespace WorkWithFarmacy.Controllers
                                         var StockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c);
                                         db.ReservedRows.Add(OrdersList.rows[k]); // adding to reserve table
                                         StockRow.First().Qnt = NntQnt.First() - OrdersList.rows[k].Nnt;
-                                        db.Stocks.Update(StockRow.First());                                       
+                                        db.Stocks.Update(StockRow.First());
                                         OrderStatusToStore status200 = new OrderStatusToStore(
-                                       OrdersList.statuses[i].StatusId = Guid.NewGuid(),
-                                       OrdersList.statuses[i].OrderId = OrdersList.statuses[i].OrderId,
-                                       OrdersList.statuses[i].RowId = OrdersList.statuses[i].RowId,
-                                       OrdersList.statuses[i].Date = DateTime.Now,
-                                       OrdersList.statuses[i].RcDate = OrdersList.statuses[i].RcDate,
-                                       OrdersList.statuses[i].Status = 200,
-                                       OrdersList.statuses[i].Ts = DateTime.UtcNow);
+                                        OrdersList.statuses[i].OrderId,
+                                        OrdersList.statuses[i].RowId,
+                                        OrdersList.statuses[i].StoreId,
+                                        OrdersList.statuses[i].RcDate,
+                                        200);
                                         db.OrderStatus.Add(status200);
                                         toSite.statuses.Add(status200);
                                     }
@@ -250,29 +248,23 @@ namespace WorkWithFarmacy.Controllers
                                         db.Stocks.Update(StockRow.First()); // updating Stock table
                                         OrdersList.rows[k].QntUnrsv = StockQntExist;
                                         OrderStatusToStore status201 = new OrderStatusToStore(
-                                      OrdersList.statuses[i].StatusId = Guid.NewGuid(),
-                                      OrdersList.statuses[i].OrderId = OrdersList.statuses[i].OrderId,
-                                      OrdersList.statuses[i].RowId = OrdersList.statuses[i].RowId,
-                                      OrdersList.statuses[i].Date = DateTime.Now,
-                                      OrdersList.statuses[i].RcDate = OrdersList.statuses[i].RcDate,
-                                      OrdersList.statuses[i].Status = 201,
-                                      OrdersList.statuses[i].Ts = DateTime.UtcNow);
+                                       OrdersList.statuses[i].OrderId,
+                                       OrdersList.statuses[i].RowId,
+                                       OrdersList.statuses[i].StoreId,
+                                       OrdersList.statuses[i].RcDate,
+                                       201);
                                         db.OrderStatus.Add(status201);
                                         toSite.statuses.Add(status201);
                                     }
                                     else if (!NntQnt.Any())
                                     {
                                         //202
-                                     OrderStatusToStore status202 = new OrderStatusToStore(
-                                     OrdersList.statuses[i].StatusId = Guid.NewGuid(),
-                                     OrdersList.statuses[i].OrderId = OrdersList.statuses[i].OrderId,
-                                     OrdersList.statuses[i].RowId = OrdersList.statuses[i].RowId,
-                                     OrdersList.statuses[i].Date = DateTime.Now,
-                                     OrdersList.statuses[i].RcDate = OrdersList.statuses[i].RcDate,
-                                     OrdersList.statuses[i].Status = 202,
-                                     OrdersList.statuses[i].Ts = DateTime.UtcNow);
-                                        db.OrderStatus.Add(status202);
-                                        toSite.statuses.Add(status202);
+                                        OrderStatusToStore status202 = new OrderStatusToStore(
+                                       OrdersList.statuses[i].OrderId,
+                                       OrdersList.statuses[i].RowId,
+                                       OrdersList.statuses[i].StoreId,
+                                       OrdersList.statuses[i].RcDate,
+                                       202);
                                     }
                                     db.OrderRows.Add(OrdersList.rows[k]);
                                     toSite.rows.Add(OrdersList.rows[k]);
@@ -287,46 +279,62 @@ namespace WorkWithFarmacy.Controllers
                                 }
                             }
                         }
-                        //else if (OrdersList.statuses[i].Status == 108)
-                        //{
-                        //    for (int k = 0; k < OrdersList.rows.Count; k++)
-                        //    {
-                        //        if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
-                        //        {
-                        //            db.OrderRows.Remove(db.OrderRows.Single(a => a.OrderId == OrdersList.statuses[i].OrderId));                                   
+                        else if (OrdersList.statuses[i].Status == 108) // 108
+                        {
+                            for (int k = 0; k < OrdersList.rows.Count; k++)
+                            {
+                                if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
+                                {
+                                    var reservedRow = (from c in db.ReservedRows where c.OrderId == OrdersList.rows[k].OrderId select c).First(); // take row from reserved table
+                                    var stockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c).First(); // take row from stock to change qnt
+                                    if (stockRow.Qnt >= OrdersList.rows[k].Qnt)
+                                    {
+                                        stockRow.Qnt =- OrdersList.rows[k].Qnt;
+                                        db.Stocks.Update(stockRow);
+                                        reservedRow.Qnt = OrdersList.rows[k].Qnt;
+                                        db.ReservedRows.Update(reservedRow);
+                                        db.OrderRows.Update(OrdersList.rows[k]);
+                                        toSite.rows.Add(OrdersList.rows[k]);
+                                        OrderStatusToStore status201Edited = new OrderStatusToStore(
+                                          OrdersList.statuses[i].OrderId,
+                                          OrdersList.statuses[i].RowId,
+                                          OrdersList.statuses[i].StoreId,
+                                          OrdersList.statuses[i].RcDate,
+                                          201);
+                                        db.OrderStatus.Add(status201Edited);
+                                        toSite.statuses.Add(status201Edited);
+                                    }
+                                    else
+                                    {
+                                        var stockRow2 = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c.Nnt).ToList(); // if db has several row with same nnt and diff partid
+                                        OrdersList.rows[k].QntUnrsv = OrdersList.rows[k].Qnt - stockRow2.Sum(); 
+                                        db.OrderRows.Update(OrdersList.rows[k]);
+                                        toSite.rows.Add(OrdersList.rows[k]);
+                                        OrderStatusToStore status201Edited = new OrderStatusToStore(
+                                          OrdersList.statuses[i].OrderId,
+                                          OrdersList.statuses[i].RowId,
+                                          OrdersList.statuses[i].StoreId,
+                                          OrdersList.statuses[i].RcDate,
+                                          201);
+                                        db.OrderStatus.Add(status201Edited);
+                                        toSite.statuses.Add(status201Edited);
+                                    }                                    
+                                }
+                            }
+                            var status201 = BuildArrToSite(toSite);
+                            PutOrsdersToSite(status201);
+                            db.SaveChanges();
+                        }
+                        else if (OrdersList.statuses[i].Status == 102)
+                        {
+                            for (int k = 0; k < OrdersList.rows.Count; k++)
+                            {
+                                if (OrdersList.statuses[i].OrderId == OrdersList.rows[i].OrderId)
+                                {
 
-                        //            db.OrderRows.Add(OrdersList.rows[k]);
-
-                        //            db.OrderRows.Add(OrdersList.rows[k]);
-                        //            listrowstosite.Add(OrdersList.rows[k]);
-                        //            toSite.rows = listrowstosite;
-                        //            OrderStatusToStore status208 = new OrderStatusToStore();
-                        //            status208.StatusId = Guid.NewGuid();
-                        //            status208.OrderId = OrdersList.statuses[i].OrderId;
-                        //            status208.RowId = OrdersList.statuses[i].RowId;
-                        //            status208.Date = DateTime.Today;
-                        //            status208.RcDate = OrdersList.statuses[i].RcDate;
-                        //            status208.Status = 208;
-                        //            status208.Ts = DateTime.UtcNow;
-                        //            db.OrderStatus.Add(status208);
-                        //            liststatusestosite.Add(status208);
-                        //            toSite.statuses = liststatusestosite;
-                        //        }
-                        //    }
-                        //    var status201 = BuildArrToSite(toSite);
-                        //    PutOrsdersToSite(status201);
-                        //    db.SaveChanges();
-                        //}
-                        //else if (OrdersList.statuses[i].Status == 102)
-                        //{
-                        //    for (int k = 0; k < OrdersList.rows.Count; k++)
-                        //    {
-                        //        if (OrdersList.statuses[i].OrderId == OrdersList.rows[i].OrderId)
-                        //        {
-
-                        //        }
-                        //    }
-                        //}
+                                }
+                            }
+                        }
                     }
 
                     var array200 = BuildArrToSite(toSite);
@@ -378,26 +386,32 @@ namespace WorkWithFarmacy.Controllers
         }
         
         public ArrayOrdersToSite BuildArrToSite(PutOrderToSite content)
-        {
+        {            
             List<SendOrderStatuses> listStatuses = new List<SendOrderStatuses>();
-            List<SendOrderRows> listRows = new List<SendOrderRows>();            
+            List<SendOrderRows> listRows = new List<SendOrderRows>();
 
-            for (int i = 0; i < content.statuses.Count; i ++)
+            try
             {
-                SendOrderStatuses obj = new SendOrderStatuses(content.statuses[i].StatusId, content.statuses[i].OrderId, content.statuses[i].StoreId, content.statuses[i].Date, content.statuses[i].Status);
-                listStatuses.Add(obj);
-            }
+                for (int i = 0; i < content.statuses.Count; i++)
+                {
+                    SendOrderStatuses obj = new SendOrderStatuses(content.statuses[i].StatusId, content.statuses[i].OrderId, content.statuses[i].StoreId, content.statuses[i].Date, content.statuses[i].Status);
+                    listStatuses.Add(obj);
+                }
 
-            for (int j = 0; j < content.rows.Count; j++)
+                for (int j = 0; j < content.rows.Count; j++)
+                {
+                    SendOrderRows obj = new SendOrderRows(content.rows[j].RowId, content.rows[j].QntUnrsv);
+                    listRows.Add(obj);
+                }
+
+                ArrayOrdersToSite array = new ArrayOrdersToSite(listRows, listStatuses);
+
+                return array;
+            }
+            catch
             {
-                SendOrderRows obj = new SendOrderRows(content.rows[j].RowId, content.rows[j].QntUnrsv);
-                listRows.Add(obj);
+
             }
-
-            ArrayOrdersToSite array = new ArrayOrdersToSite(listRows, listStatuses);
-            System.Diagnostics.Debug.WriteLine(array + "---------------------array200 to api---------------------");
-
-            return array;
 
         }        
 

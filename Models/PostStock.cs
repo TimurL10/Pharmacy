@@ -21,15 +21,17 @@ namespace WorkWithFarmacy.Models
 
         public double PrcRet { get; set; }
 
-        //public PostStock(string PrtIdn, int Nntn, double Qntn, string SupInnn, int Ndsn, double PrcOptNdsn, double PrcRetn)
-        //{
-        //    PrtId = PrtIdn;
-        //    Nnt = Nntn;
-        //    Qnt = Qntn;
-        //    SupInn = SupInnn;
-        //    Nds = Ndsn;
-        //    PrcOptNds = PrcOptNdsn;
-        //    PrcRet = PrcRetn;
-        //}
+        public PostStock(string prtid, int nnt, double qnt, string supinn, int nds, double prcoptnds, double prcret)
+        {
+            this.PrtId = prtid;
+            this.Nnt = nnt;
+            this.Qnt = qnt;
+            this.SupInn = supinn;
+            this.Nds = nds;
+            this.PrcOptNds = prcoptnds;
+            this.PrcRet = prcret;
+        }
+
+
     }
 }

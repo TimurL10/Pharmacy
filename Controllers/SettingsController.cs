@@ -81,33 +81,22 @@ namespace WorkWithFarmacy.Controllers
             List<PostStock> fullStockList = new List<PostStock>();
             string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
             string client_secret = "8rU2zvHA";
-
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
-
-
             using (CatalogContext db = new CatalogContext(option))
             {
                 db.GetService<ILoggerFactory>().AddProvider(new MyLoggerProvider());
-               // db.Database.ExecuteSqlRaw(@"CREATE VIEW View_FullStock AS Select PrtId, Nnt, Qnt, SupInn, Nds, PrcOptNds, PrcRet From 'Stocks'");                
+                // db.Database.ExecuteSqlRaw(@"CREATE VIEW view_fullStock as select prtid, nnt, qnt, supinn, nds, prcoptnds, prcret from stocks");                
                 var fullStock = db.FullStock.ToList();
-
-                //var stock = (from c in db.Stocks where c.Qnt > 0 select c);
-                //list = stock.ToList();
+                
                 foreach (var c in fullStock)
                 {
-                   // PostStock obj = new PostStock(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
-                    //FullStockFiltered obj = new FullStockFiltered(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
-                    //listFiltered.Add(obj);
-                  //  fullStockList.Add(obj);
+                    PostStock obj = new PostStock(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);                    
+                    fullStockList.Add(obj);
                 }
+            }          
 
-            }
-            
-
-
-            FullStockListAndDate StockList = new FullStockListAndDate(DateTime.UtcNow, listFiltered);     
-       
+            FullStockListAndDate StockList = new FullStockListAndDate(DateTime.UtcNow, fullStockList);    
             var jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),

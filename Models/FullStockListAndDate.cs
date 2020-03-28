@@ -8,11 +8,11 @@ namespace WorkWithFarmacy.Models
     public class FullStockListAndDate
     {
         public DateTime Date { get; set; }
-        public List<FullStockFiltered> Stocks {get;set;}
-        public FullStockListAndDate(DateTime Daten, List<FullStockFiltered> Stocksn)
+        public List<PostStock> Stocks {get;set;}
+        public FullStockListAndDate(DateTime Date, List<PostStock> Stocks)
         {
-            Date = Daten;
-            Stocks = Stocksn;
+            this.Date = Date;
+            this.Stocks = Stocks;
         }
     }
 }
