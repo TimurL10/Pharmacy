@@ -30,5 +30,16 @@ namespace WorkWithFarmacy.Models
 
         [JsonPropertyName("prcRet")]
         public double PrcRet { get; set; }
+
+        public Stock(ReservedStock reservedStock)
+        {
+            PrtId = reservedStock.PrtId;
+            Nnt = reservedStock.Nnt;
+            Qnt = reservedStock.Qnt;
+            SupInn = reservedStock.SupInn;
+            Nds = reservedStock.Nds;
+            PrcOptNds = reservedStock.PrcOptNds;
+            PrcRet = reservedStock.PrcRet;
+        }
     }
 }

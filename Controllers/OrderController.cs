@@ -220,13 +220,14 @@ namespace WorkWithFarmacy.Controllers
                             {
                                 if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
                                 {
-                                    var NntQnt = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c.Qnt);
-                                    if (NntQnt.First() >= OrdersList.rows[k].Qnt)
+                                    var StockNntQnt = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c.Qnt).First();
+                                    if (StockNntQnt >= OrdersList.rows[k].Qnt)
                                     {
                                         //200
                                         var StockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c);
-                                        db.ReservedRows.Add(OrdersList.rows[k]); // adding to reserve table
-                                        StockRow.First().Qnt = NntQnt.First() - OrdersList.rows[k].Nnt;
+                                        var reservedStock = new ReservedStock(StockRow.First(), OrdersList.rows[k]); // create new obj put it to reserved stock
+                                        db.ReservedStocks.Add(reservedStock);
+                                        StockRow.First().Qnt = StockNntQnt - OrdersList.rows[k].Nnt;
                                         db.Stocks.Update(StockRow.First());
                                         OrderStatusToStore status200 = new OrderStatusToStore(
                                         OrdersList.statuses[i].OrderId,
@@ -236,15 +237,17 @@ namespace WorkWithFarmacy.Controllers
                                         200);
                                         db.OrderStatus.Add(status200);
                                         toSite.statuses.Add(status200);
+                                        toSite.rows.Add(OrdersList.rows[k]);
                                     }
-                                    else if (NntQnt.First() < OrdersList.rows[k].Qnt)
+                                    else if (StockNntQnt < OrdersList.rows[k].Qnt)
                                     {
                                         //201                                                
-                                        var StockQntExist = OrdersList.rows[k].Qnt - NntQnt.First();
-                                        OrdersList.rows[k].Qnt = StockQntExist;
-                                        db.ReservedRows.Add(OrdersList.rows[k]); // adding to reserve table
+                                        var StockQntExist = OrdersList.rows[k].Qnt - StockNntQnt;
+                                        OrdersList.rows[k].Qnt = StockNntQnt; // change existing qnt of row for save it in db
                                         var StockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c);
-                                        StockRow.First().Qnt = 0;
+                                        var reservedStock = new ReservedStock(StockRow.First(), OrdersList.rows[k]); // create new obj put it to reserved stock
+                                        db.ReservedStocks.Add(reservedStock);
+                                        StockRow.First().Qnt = 0; // Zero Exist in stock now
                                         db.Stocks.Update(StockRow.First()); // updating Stock table
                                         OrdersList.rows[k].QntUnrsv = StockQntExist;
                                         OrderStatusToStore status201 = new OrderStatusToStore(
@@ -255,8 +258,9 @@ namespace WorkWithFarmacy.Controllers
                                        201);
                                         db.OrderStatus.Add(status201);
                                         toSite.statuses.Add(status201);
+                                        toSite.rows.Add(OrdersList.rows[k]);
                                     }
-                                    else if (!NntQnt.Any())
+                                    else if (StockNntQnt <= 0)
                                     {
                                         //202
                                         OrderStatusToStore status202 = new OrderStatusToStore(
@@ -265,19 +269,13 @@ namespace WorkWithFarmacy.Controllers
                                        OrdersList.statuses[i].StoreId,
                                        OrdersList.statuses[i].RcDate,
                                        202);
+                                        db.OrderRows.Add(OrdersList.rows[k]);
+                                        toSite.statuses.Add(status202);
+                                        toSite.rows.Add(OrdersList.rows[k]);
                                     }
-                                    db.OrderRows.Add(OrdersList.rows[k]);
-                                    toSite.rows.Add(OrdersList.rows[k]);
+                                    
                                 }
-                            }
-                            for (int j = 0; j < OrdersList.headers.Count; j++)
-                            {
-                                if (OrdersList.statuses[i].OrderId == OrdersList.headers[j].OrderId)
-                                {
-                                    db.OrderHeader.Add(OrdersList.headers[j]);
-                                    db.OrderStatus.Add(OrdersList.statuses[i]);                                    
-                                }
-                            }
+                            }                            
                         }
                         else if (OrdersList.statuses[i].Status == 108) // 108
                         {
@@ -285,16 +283,14 @@ namespace WorkWithFarmacy.Controllers
                             {
                                 if (OrdersList.statuses[i].OrderId == OrdersList.rows[k].OrderId)
                                 {
-                                    var reservedRow = (from c in db.ReservedRows where c.OrderId == OrdersList.rows[k].OrderId select c).First(); // take row from reserved table
-                                    var stockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c).First(); // take row from stock to change qnt
-                                    if (stockRow.Qnt >= OrdersList.rows[k].Qnt)
+                                    var reservedRow = (from c in db.ReservedStocks where c.RowId == OrdersList.rows[k].RowId select c).First(); // take row from reserved table
+                                    if (reservedRow.Qnt > OrdersList.rows[k].Qnt) // cus reduced qnt
                                     {
-                                        stockRow.Qnt =- OrdersList.rows[k].Qnt;
-                                        db.Stocks.Update(stockRow);
+                                        var newQnt = reservedRow.Qnt - OrdersList.rows[k].Qnt;
                                         reservedRow.Qnt = OrdersList.rows[k].Qnt;
-                                        db.ReservedRows.Update(reservedRow);
-                                        db.OrderRows.Update(OrdersList.rows[k]);
-                                        toSite.rows.Add(OrdersList.rows[k]);
+                                        db.ReservedStocks.Update(reservedRow);
+                                        var stockObject = new Stock(reservedRow);
+                                        db.Stocks.Add(stockObject); // adding row from reserve to stock
                                         OrderStatusToStore status201Edited = new OrderStatusToStore(
                                           OrdersList.statuses[i].OrderId,
                                           OrdersList.statuses[i].RowId,
@@ -303,42 +299,70 @@ namespace WorkWithFarmacy.Controllers
                                           201);
                                         db.OrderStatus.Add(status201Edited);
                                         toSite.statuses.Add(status201Edited);
+                                        toSite.rows.Add(OrdersList.rows[k]);
                                     }
                                     else
                                     {
-                                        var stockRow2 = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c.Nnt).ToList(); // if db has several row with same nnt and diff partid
-                                        OrdersList.rows[k].QntUnrsv = OrdersList.rows[k].Qnt - stockRow2.Sum(); 
-                                        db.OrderRows.Update(OrdersList.rows[k]);
-                                        toSite.rows.Add(OrdersList.rows[k]);
-                                        OrderStatusToStore status201Edited = new OrderStatusToStore(
+                                        var stockRow = (from c in db.Stocks where c.Nnt == OrdersList.rows[k].Nnt select c).First();
+                                        var needQnt = reservedRow.Qnt - OrdersList.rows[k].Qnt;
+                                        stockRow.Qnt =+ needQnt;
+                                        if (stockRow.Qnt >= 0)
+                                        {
+                                            db.Stocks.Add(stockRow);
+                                            reservedRow.Qnt = OrdersList.rows[k].Qnt;
+                                            db.ReservedStocks.Add(reservedRow);
+                                            toSite.rows.Add(OrdersList.rows[k]);
+                                            OrderStatusToStore status201Edited = new OrderStatusToStore(
                                           OrdersList.statuses[i].OrderId,
                                           OrdersList.statuses[i].RowId,
                                           OrdersList.statuses[i].StoreId,
                                           OrdersList.statuses[i].RcDate,
                                           201);
-                                        db.OrderStatus.Add(status201Edited);
-                                        toSite.statuses.Add(status201Edited);
+                                            db.OrderStatus.Add(status201Edited);
+                                            toSite.statuses.Add(status201Edited);
+                                            toSite.rows.Add(OrdersList.rows[k]);
+                                        }
+                                        else
+                                        {
+                                            stockRow.Qnt = 0;
+                                            db.Stocks.Add(stockRow);
+                                            reservedRow.Qnt = reservedRow.Qnt + (needQnt - stockRow.Qnt);
+                                            db.ReservedStocks.Add(reservedRow);
+                                            OrdersList.rows[k].Qnt = stockRow.Qnt + (stockRow.Qnt * 2);
+                                            OrderStatusToStore status201Edited = new OrderStatusToStore(
+                                         OrdersList.statuses[i].OrderId,
+                                         OrdersList.statuses[i].RowId,
+                                         OrdersList.statuses[i].StoreId,
+                                         OrdersList.statuses[i].RcDate,
+                                         201);
+                                            db.OrderStatus.Add(status201Edited);
+                                            toSite.statuses.Add(status201Edited);
+                                            toSite.rows.Add(OrdersList.rows[k]);
+
+                                        }
                                     }                                    
                                 }
                             }
                             var status201 = BuildArrToSite(toSite);
-                            PutOrsdersToSite(status201);
                             db.SaveChanges();
                         }
-                        else if (OrdersList.statuses[i].Status == 102)
+                        // Status 102
+                        else if (OrdersList.statuses[i].Status == 102) 
                         {
                             for (int k = 0; k < OrdersList.rows.Count; k++)
                             {
                                 if (OrdersList.statuses[i].OrderId == OrdersList.rows[i].OrderId)
                                 {
-
+                                    var reservedRow = (from c in db.ReservedStocks where c.RowId == OrdersList.rows[i].RowId select c);
+                                    db.Stocks.Add(new Stock(reservedRow.First()));
+                                    db.ReservedStocks.Remove(reservedRow.First());
+                                    toSite.rows.Add(OrdersList.rows[k]);
                                 }
                             }
                         }
                     }
-
-                    var array200 = BuildArrToSite(toSite);
-                    PutOrsdersToSite(array200);
+                    var rowsAndStatusesArray = BuildArrToSite(toSite);
+                    PutOrsdersToSite(rowsAndStatusesArray);
                     db.SaveChanges();
                 }
                 return OrdersList;
@@ -408,11 +432,12 @@ namespace WorkWithFarmacy.Controllers
 
                 return array;
             }
-            catch
+            catch (ArgumentNullException e)
             {
+                Console.WriteLine(e.Message);
 
             }
-
+            return null;
         }        
 
     }
