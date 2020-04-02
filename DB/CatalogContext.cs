@@ -10,7 +10,7 @@ namespace WorkWithFarmacy.DB
     {        
         public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
         {
-           // Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated(); 
         }
 
@@ -32,7 +32,7 @@ namespace WorkWithFarmacy.DB
             }
             modelBuilder.Entity<PostStock>((o =>
             {
-                o.HasNoKey();
+                o.HasNoKey();                
                 o.ToView("view_fullstock");
             }));
             

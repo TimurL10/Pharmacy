@@ -7,19 +7,20 @@ namespace WorkWithFarmacy.Models
 {
     public class PostStock
     {   
-        public string PrtId { get; set; }
+        public string PrtId { get; }
 
-        public int Nnt { get; set; }
+        public int Nnt { get; }
 
-        public double Qnt { get; set; }
+        public double Qnt { get; }
 
-        public string SupInn { get; set; }
+        public string SupInn { get;}
 
-        public int Nds { get; set; }
+        public int Nds { get; }
 
-        public double PrcOptNds { get; set; }
+        public double PrcOptNds { get;}
 
-        public double PrcRet { get; set; }
+        public double PrcRet { get; }
+
 
         public PostStock(string prtid, int nnt, double qnt, string supinn, int nds, double prcoptnds, double prcret)
         {
@@ -31,6 +32,14 @@ namespace WorkWithFarmacy.Models
             this.PrcOptNds = prcoptnds;
             this.PrcRet = prcret;
         }
+
+        public PostStock()
+        {
+
+        }
+
+
+
 
 
     }

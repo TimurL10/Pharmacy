@@ -46,6 +46,11 @@ namespace WorkWithFarmacy.Models
         public double PrcFix { get; set; }
 
         public DateTime Ts { get; set; }
+
+        public ReservedStock()
+        {
+
+        }
         public ReservedStock(Stock stockrow, OrderRowToStore orderrow)
         {
             try
