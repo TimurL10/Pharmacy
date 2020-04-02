@@ -85,16 +85,16 @@ namespace WorkWithFarmacy.Controllers
             token = tokenDictionary["access_token"];
             using (CatalogContext db = new CatalogContext(option))
             {
-                db.GetService<ILoggerFactory>().AddProvider(new MyLoggerProvider());
+               // db.GetService<ILoggerFactory>().AddProvider(new MyLoggerProvider());
                 // db.Database.ExecuteSqlRaw(@"CREATE VIEW view_fullStock as select prtid, nnt, qnt, supinn, nds, prcoptnds, prcret from stocks");                
-                var fullStock = (from c in db.FullStock select c).First(); 
+                var fullStock = (from c in db.Stocks select c).ToList();
                 //var fullStock = db.FullStock.ToList();
-                
-                //foreach (var c in fullStock)
-                //{
-                //    PostStock obj = new PostStock(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);                    
-                //    fullStockList.Add(obj);
-                //}
+
+                foreach (var c in fullStock)
+                {
+                    PostStock obj = new PostStock(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
+                    fullStockList.Add(obj);
+                }
             }          
 
             FullStockListAndDate StockList = new FullStockListAndDate(DateTime.UtcNow, fullStockList);    

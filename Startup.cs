@@ -59,17 +59,7 @@ namespace WorkWithFarmacy
                     name: "default",
                     pattern: "{controller=Settings}/{action=Settings}/{id?}");
             });
-
-            var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
-            ILogger logger = loggerFactory.CreateLogger<Startup>();
-            app.Run(async (context) =>
-            {
-                logger.LogInformation("Requested Path: {0}", context.Request.Path);
-                await context.Response.WriteAsync("Hello World!");
-            });
+                       
         }
     }
 }

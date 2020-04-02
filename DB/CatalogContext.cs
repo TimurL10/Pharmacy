@@ -7,7 +7,23 @@ using Microsoft.Extensions.Logging.Console;
 namespace WorkWithFarmacy.DB
 {
     public class CatalogContext : DbContext
-    {        
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLoggerFactory(MyLoggerFactory);
+        }
+
+        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddProvider(new MyLoggerProvider());    // указываем наш провайдер логгирования
+            builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Debug)
+                   .AddProvider(new MyLoggerProvider());
+            builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Connection.Name && level == LogLevel.Debug)
+       .AddProvider(new MyLoggerProvider());
+            builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Transaction.Name && level == LogLevel.Debug)
+        .AddProvider(new MyLoggerProvider());
+        });
+
         public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
         {
             //Database.EnsureDeleted();
