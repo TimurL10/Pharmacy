@@ -76,8 +76,6 @@ namespace WorkWithFarmacy.Controllers
 
         public async void PostFullStock()
         {
-            List<Stock> list;
-            List<FullStockFiltered> listFiltered = new List<FullStockFiltered>();
             List<PostStock> fullStockList = new List<PostStock>();
             string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
             string client_secret = "8rU2zvHA";
@@ -85,19 +83,17 @@ namespace WorkWithFarmacy.Controllers
             token = tokenDictionary["access_token"];
             using (CatalogContext db = new CatalogContext(option))
             {
-               // db.GetService<ILoggerFactory>().AddProvider(new MyLoggerProvider());
-                // db.Database.ExecuteSqlRaw(@"CREATE VIEW view_fullStock as select prtid, nnt, qnt, supinn, nds, prcoptnds, prcret from stocks");                
-                var fullStock = (from c in db.Stocks select c).ToList();
-                //var fullStock = db.FullStock.ToList();
-
+                // db.Database.ExecuteSqlRaw(@"CREATE VIEW view_fullStock as select prtid, nnt, qnt, supinn, nds, prcoptnds, prcret from stocks");    
+                var fullStock = (from c in db.FullStock select c).ToList();
+                
                 foreach (var c in fullStock)
                 {
                     PostStock obj = new PostStock(c.PrtId, c.Nnt, c.Qnt, c.SupInn, c.Nds, c.PrcOptNds, c.PrcRet);
-                    fullStockList.Add(obj);
+                    fullStockList.Add(obj);                   
                 }
-            }          
-
-            FullStockListAndDate StockList = new FullStockListAndDate(DateTime.UtcNow, fullStockList);    
+            }
+            fullStockList.RemoveRange(1, 5600);
+            FullStockListAndDate StockList = new FullStockListAndDate(DateTime.Now, fullStockList);    
             var jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -109,8 +105,9 @@ namespace WorkWithFarmacy.Controllers
                 using (var client = CreateClient(token))
                 {
                     string JsonStock = JsonConvert.SerializeObject(StockList, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-                    var responce = await client.PostAsync(PUTFULLSTOCK_PATH, new StringContent(JsonStock, Encoding.UTF8, "application/json"));
+                    var responce = await client.PutAsync(PUTFULLSTOCK_PATH, new StringContent(JsonStock, Encoding.UTF8, "application/json"));
                     System.Diagnostics.Debug.WriteLine(responce + "-------------------responce-----------------------");
+                    ViewBag.Message = responce.StatusCode;
                 }
             }
             catch
@@ -119,9 +116,11 @@ namespace WorkWithFarmacy.Controllers
                 {
                     tokenDictionary = GetTokenDictionary(client_id, client_secret);
                     token = tokenDictionary["access_token"];
+                    System.Diagnostics.Debug.WriteLine(Response.StatusCode);
                 }
                 if (Response.StatusCode == 429)
                 {
+                    System.Diagnostics.Debug.WriteLine(Response.StatusCode);
                     System.Diagnostics.Debug.WriteLine("Sleep for 30 sec wating for token");
                     Thread.Sleep(30000);
                     tokenDictionary = GetTokenDictionary(client_id, client_secret);
@@ -129,10 +128,11 @@ namespace WorkWithFarmacy.Controllers
                 }
                 if (Response.StatusCode == 400)
                 {
+                    System.Diagnostics.Debug.WriteLine(Response.StatusCode);
                     System.Diagnostics.Debug.WriteLine("Bad Request");
                     throw new Exception("Bad Request 400");
                 }
-            }            
+            }
         }
     }
 }

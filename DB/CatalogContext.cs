@@ -15,14 +15,14 @@ namespace WorkWithFarmacy.DB
 
         public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.AddProvider(new MyLoggerProvider());    // указываем наш провайдер логгирования
+            // builder.AddProvider(new MyLoggerProvider());    // указываем наш провайдер логгирования
             builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Debug)
                    .AddProvider(new MyLoggerProvider());
-            builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Connection.Name && level == LogLevel.Debug)
-       .AddProvider(new MyLoggerProvider());
-            builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Transaction.Name && level == LogLevel.Debug)
-        .AddProvider(new MyLoggerProvider());
-        });
+            //     builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Connection.Name && level == LogLevel.Debug)
+            //.AddProvider(new MyLoggerProvider());
+        //    builder.AddFilter((category, level) => category == DbLoggerCategory.Database.Transaction.Name && level == LogLevel.Debug)
+        //.AddProvider(new MyLoggerProvider());
+        });            
 
         public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
         {
@@ -37,7 +37,6 @@ namespace WorkWithFarmacy.DB
         public DbSet<OrderHeaderToStore> OrderHeader { get; set; }
         public DbSet<OrderStatusToStore> OrderStatus { get; set; }         
         public DbSet<PostStock> FullStock { get; set; }
-        public DbSet<OrderRowToStore> ReservedRows { get; set; }
         public DbSet<ReservedStock> ReservedStocks { get; set; }
        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,17 +48,24 @@ namespace WorkWithFarmacy.DB
             modelBuilder.Entity<PostStock>((o =>
             {
                 o.HasNoKey();                
-                o.ToView("view_fullstock");
+                o.ToView("viewfullstock");
+                o.Property(v => v.PrtId).HasColumnName("PrtId");
+                o.Property(v => v.Nnt).HasColumnName("Nnt");
+                o.Property(v => v.Qnt).HasColumnName("Qnt");
+                o.Property(v => v.SupInn).HasColumnName("SupInn");
+                o.Property(v => v.Nds).HasColumnName("Nds");
+                o.Property(v => v.PrcOptNds).HasColumnName("PrcOptNds");
+                o.Property(v => v.PrcRet).HasColumnName("PrcRet");
+
             }));
             
             modelBuilder.Entity<Preorder>().HasKey(o => o.PreorderItemId);
-            modelBuilder.Entity<Stock>().ToTable("stocks").HasKey(o => o.StockItemId);
+            modelBuilder.Entity<Stock>().ToTable("Stocks").HasKey(o => o.StockItemId);
             modelBuilder.Entity<Store>().HasKey(o => o.StoreId);
-            modelBuilder.Entity<OrderHeaderToStore>().ToTable("orderHeader").HasKey(o => o.OrderHeaderId);
-            modelBuilder.Entity<OrderRowToStore>().ToTable("orderRows").HasKey(o => o.OrderRowId);
-            modelBuilder.Entity<OrderStatusToStore>().ToTable("orderStatus").HasKey(o => o.OrderStatusId);
-            modelBuilder.Entity<OrderRowToStore>().ToTable("reservedRows").HasKey(o => o.OrderRowId);
-            modelBuilder.Entity<ReservedStock>().ToTable("reservedstocks").HasKey(o => o.ReservedStockItemId);
+            modelBuilder.Entity<OrderHeaderToStore>().ToTable("OrderHeader").HasKey(o => o.OrderHeaderId);
+            modelBuilder.Entity<OrderRowToStore>().ToTable("OrderRows").HasKey(o => o.OrderRowId);
+            modelBuilder.Entity<OrderStatusToStore>().ToTable("OrderStatus").HasKey(o => o.OrderStatusId);
+            modelBuilder.Entity<ReservedStock>().ToTable("ReservedStocks").HasKey(o => o.ReservedStockItemId);
 
         }
     }

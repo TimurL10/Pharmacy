@@ -32,7 +32,7 @@ namespace WorkWithFarmacy
                     TState state, Exception exception, Func<TState, Exception, string> formatter)
             {
                 File.AppendAllText("log.txt", formatter(state, exception));
-                Console.WriteLine(formatter(state, exception));
+                Console.WriteLine(formatter(state, exception));                
             }
         }
     }

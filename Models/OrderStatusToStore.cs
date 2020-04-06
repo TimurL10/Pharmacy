@@ -39,6 +39,10 @@ namespace WorkWithFarmacy.Models
         [JsonPropertyName("ts")]
         public DateTime Ts { get; set; }
 
+        public OrderStatusToStore()
+        {
+
+        }
         public OrderStatusToStore(Guid OrderId, Guid RowId, Guid StoreId, DateTime RcDate, int Status)
         {            
             this.StatusId = Guid.NewGuid();

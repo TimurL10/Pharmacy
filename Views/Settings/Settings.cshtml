@@ -6,5 +6,7 @@
 
 <h1>Settings</h1>
 
-<button>hello</button>
-@Html.ActionLink("Post Full Stock","PostFullStock","Settings")
+<button>@Html.ActionLink("Post Full Stock", "PostFullStock", "Settings")</button>
+
+<h3>Stock was uploaded with status:</h3>
+<h3>@ViewBag.Message</h3>
