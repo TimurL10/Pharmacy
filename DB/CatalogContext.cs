@@ -48,7 +48,7 @@ namespace WorkWithFarmacy.DB
             modelBuilder.Entity<PostStock>((o =>
             {
                 o.HasNoKey();                
-                o.ToView("viewfullstock");
+                o.ToView("view_fullstock");
                 o.Property(v => v.PrtId).HasColumnName("PrtId");
                 o.Property(v => v.Nnt).HasColumnName("Nnt");
                 o.Property(v => v.Qnt).HasColumnName("Qnt");

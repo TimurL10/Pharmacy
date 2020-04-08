@@ -22,7 +22,7 @@ namespace WorkWithFarmacy.Controllers
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
         private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
-        public const string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
+        public const string client_id = "d82ba4cd-6f5a-46a5-92ad-fbbea56aae40";
         private static string token;
         private const string since = "";
         private const string PUTFULLSTOCK_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/stocks";
@@ -77,8 +77,8 @@ namespace WorkWithFarmacy.Controllers
         public async void PostFullStock()
         {
             List<PostStock> fullStockList = new List<PostStock>();
-            string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
-            string client_secret = "8rU2zvHA";
+            string client_id = "d82ba4cd-6f5a-46a5-92ad-fbbea56aae40";
+            string client_secret = "g0XoL4lw";
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
             using (CatalogContext db = new CatalogContext(option))
@@ -105,7 +105,7 @@ namespace WorkWithFarmacy.Controllers
                 using (var client = CreateClient(token))
                 {
                     string JsonStock = JsonConvert.SerializeObject(StockList, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-                    var responce = await client.PutAsync(PUTFULLSTOCK_PATH, new StringContent(JsonStock, Encoding.UTF8, "application/json"));
+                    var responce = await client.PostAsync(PUTFULLSTOCK_PATH, new StringContent(JsonStock, Encoding.UTF8, "application/json"));
                     System.Diagnostics.Debug.WriteLine(responce + "-------------------responce-----------------------");
                     ViewBag.Message = responce.StatusCode;
                 }
