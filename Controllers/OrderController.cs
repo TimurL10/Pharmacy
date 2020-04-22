@@ -26,6 +26,7 @@ namespace WorkWithFarmacy.Controllers
         private static string token;
         private static string since="";
         //private string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
+        private string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2020-04-01";
         public PutOrderToSite toSite = new PutOrderToSite() { rows = new List<OrderRowToStore>(), statuses = new List<OrderStatusToStore>()};
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
         private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
@@ -174,7 +175,7 @@ namespace WorkWithFarmacy.Controllers
                 }          
                 using (var client = CreateClient(token))
                 {
-                    string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";                    
+                    //string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";                    
                     // var streamTaskA = client.GetStreamAsync(GETORDERS_PATH);
                     var streamTaskA = await client.GetStringAsync(GETORDERS_PATH);
                     if (streamTaskA.Length > 0)
@@ -240,7 +241,7 @@ namespace WorkWithFarmacy.Controllers
                                             //200                                            
                                             var reservedStock = new ReservedStock(RowFromStock, OrdersList.rows[k]); // create new obj put it to reserved stock
                                             db.ReservedStocks.Add(reservedStock);
-                                            RowFromStock.Qnt = RowFromStock.Qnt - OrdersList.rows[k].Qnt;
+                                            RowFromStock.Qnt -= OrdersList.rows[k].Qnt;
                                             db.Stocks.Update(RowFromStock);
                                             OrderStatusToStore status200 = new OrderStatusToStore(
                                             OrdersList.statuses[i].OrderId,
@@ -322,7 +323,7 @@ namespace WorkWithFarmacy.Controllers
                                               OrdersList.statuses[i].RowId,
                                               OrdersList.statuses[i].StoreId,
                                               OrdersList.statuses[i].RcDate,
-                                              201);
+                                              200);
                                             db.OrderStatus.Add(status201Edited);
                                             toSite.statuses.Add(status201Edited);
                                             db.SaveChanges();
@@ -357,7 +358,7 @@ namespace WorkWithFarmacy.Controllers
                                               OrdersList.statuses[i].RowId,
                                               OrdersList.statuses[i].StoreId,
                                               OrdersList.statuses[i].RcDate,
-                                              201);
+                                              200);
                                                 db.OrderStatus.Add(status201Edited);
                                                 toSite.statuses.Add(status201Edited);
                                                 db.SaveChanges();

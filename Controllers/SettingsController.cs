@@ -35,7 +35,6 @@ namespace WorkWithFarmacy.Controllers
 
         public IActionResult Settings()
         {
-            
             _logger.LogInformation("Test Message");
             return View();
         }
