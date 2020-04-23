@@ -22,11 +22,11 @@ namespace WorkWithFarmacy.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private const string APP_PATH = "http://sso.asna.cloud:6000/connect/token";
-        public const string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
+        private const string client_id = "d82ba4cd-6f5a-46a5-92ad-fbbea56aae40";
+        private string client_secret = "8rU2zvHA";
         private static string token;
         private static string since="";
-        //private string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
-        private string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=2020-04-01";
+        private string GETORDERS_PATH = "https://api.asna.cloud/v5/stores/" + client_id + "/orders_exchanger?since=" + since + "";
         public PutOrderToSite toSite = new PutOrderToSite() { rows = new List<OrderRowToStore>(), statuses = new List<OrderStatusToStore>()};
         private static DbContextOptionsBuilder<CatalogContext> optionBuilder = new DbContextOptionsBuilder<CatalogContext>();
         private static DbContextOptions<CatalogContext> option = optionBuilder.UseNpgsql(@"Server = 127.0.0.1; User Id = postgres; Password = timur; Port = 5432; Database = PharmDb;").Options;
@@ -201,10 +201,7 @@ namespace WorkWithFarmacy.Controllers
 
         public async Task<PutOrderToSite> GetOrders()
         {
-            //try catch for getting token            
-            string client_id = "a51db5a7-4b1d-4a4d-983b-dbeaa7ab80b5";
-            string client_secret = "8rU2zvHA";    
-
+            //try catch for getting token           
             Dictionary<string, string> tokenDictionary = GetTokenDictionary(client_id, client_secret);
             token = tokenDictionary["access_token"];
 
